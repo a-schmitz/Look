@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>58ba5cbc-fb8e-4856-b8a1-d196de37bb42</ProjectGuid>
+    <ProjectGuid>{355FEE14-78D7-41C0-B052-D8A406210E0A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>look.receiver</RootNamespace>
