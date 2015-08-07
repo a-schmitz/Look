@@ -15,6 +15,12 @@ namespace look.sender
         public Form1()
         {
             InitializeComponent();
+
+            this.endgeil();
+
         }
+
+        private void endgeil() { MessageBox.Show("Hello World!"); }
+
     }
 }
