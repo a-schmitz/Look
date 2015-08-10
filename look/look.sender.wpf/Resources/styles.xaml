@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Color x:Key="ColorConnected">#FF4F7948</Color>
-    
+
     <Style x:Key="HoverableBorder" TargetType="{x:Type Border}">
         <Style.Triggers>
             <Trigger Property="Border.IsMouseOver" Value="True">
@@ -10,9 +10,41 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
+
     <SolidColorBrush x:Key="ConnectedBrush" Color="Tomato"></SolidColorBrush>
-    
+
+    <LinearGradientBrush x:Key="GradientDark">
+        <GradientStop Color="#FF1E1E1E" Offset="0"/>
+        <GradientStop Color="#FF252526" Offset="1"/>
+    </LinearGradientBrush>
+
+    <Style x:Key="TextboxWatermark" TargetType="{x:Type TextBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Grid>
+                        <Border BorderBrush="#FFCCCCCC" BorderThickness="1" Background="{StaticResource GradientDark}" CornerRadius="5" />
+
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        <Label Margin="5,0,0,0" x:Name="WaterMarkLabel" Content="{TemplateBinding Tag}" VerticalAlignment="Center"
+                               Visibility="Collapsed" Foreground="Gray" FontFamily="Arial"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Text" Value=""/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Visibility" TargetName="WaterMarkLabel" Value="Visible"/>
+                        </MultiTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="DimGray"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="MyFocusVisualStyle" >
         <Setter Property="Control.Template">
             <Setter.Value>
@@ -148,6 +180,6 @@
         </Setter>
     </Style>
 
-    
-    
+
+
 </ResourceDictionary>

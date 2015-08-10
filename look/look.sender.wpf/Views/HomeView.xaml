@@ -5,9 +5,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:wpf="clr-namespace:look.sender.wpf"
         xmlns:controls="clr-namespace:look.sender.wpf.controls;assembly=look.sender.wpf.controls"
+        xmlns:controls1="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d" 
         x:Class="look.sender.wpf.Views.HomeView"
-        d:DesignHeight="1024" d:DesignWidth="768">
+        d:DesignHeight="500" d:DesignWidth="768">
     <Border BorderBrush="#FF4B4B4B" BorderThickness="1" >
         <Grid>
 
@@ -17,14 +18,50 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="25"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <ListView Grid.Row="1">
+           
+
+
+            <Border BorderBrush="White" BorderThickness="0,0,0,1">
+                <StackPanel Orientation="Horizontal">
+                    <Button Background="{StaticResource GradientDark}" Width="30" Height="30" Margin="5,0,0,0" Click="Button_Click">
+                        <Rectangle Width="15" Height="15">
+                            <Rectangle.Fill>
+                                <VisualBrush Visual="{StaticResource appbar_magnify_add}" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Button>
+                    <Label Content="Favorites" FontSize="18" Margin="0"></Label>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="White" >
+                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" FontSize="18" Foreground="White" >
+                    <Run Text="Shared Applications"></Run>
+                </TextBlock>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Stretch" Margin="0,5,0,0">
+                <Border Background="{StaticResource GradientDark}" Height="30"  Margin="8,0,9,0" BorderThickness="1" BorderBrush="White" CornerRadius="5">
+                    <TextBox Width="140" controls1:TextBoxHelper.Watermark="Quickadd" FontSize="14" BorderThickness="0" Background="{x:Null}"></TextBox>
+                </Border>
+                <Button Width="30" Height="30" Background="{StaticResource GradientDark}">
+                    <Rectangle Width="15" Height="15">
+                        <Rectangle.Fill>
+                            <VisualBrush Visual="{StaticResource appbar_add}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Button>
+            </StackPanel>
+
+            <ListView Grid.Row="2" BorderThickness="0,0,0,0">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <controls:FavoriteItem></controls:FavoriteItem>
+                        <controls:FavoriteItem Margin="5,0" ></controls:FavoriteItem>
                     </DataTemplate>
                 </ListView.ItemTemplate>
                 <ListItem/>
@@ -35,9 +72,8 @@
                 <ListItem/>
             </ListView>
 
-            <ScrollViewer Grid.Column="1" Grid.Row="1" Background="#FF2E3030">
-                <ItemsControl x:Name="sharedWindows" ItemsSource="{Binding ShareableWindows}" VerticalAlignment="Top" HorizontalAlignment="Stretch" 
-                          >
+            <ScrollViewer Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Background="#FF2E3030" Margin="0">
+                <ItemsControl x:Name="sharedWindows" ItemsSource="{Binding ShareableWindows}" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WPFSpark:FluidWrapPanel HorizontalAlignment="Stretch"
@@ -49,7 +85,7 @@
 							IsComposing="True"
 							Orientation="Horizontal"
 							DragOpacity="0.75"
-							DragScale="1.9">
+							DragScale="1.9" Margin="0,10,0,0">
                                 <WPFSpark:FluidWrapPanel.ElementEasing>
                                     <BackEase EasingMode="EaseOut" Amplitude="0.35" />
                                 </WPFSpark:FluidWrapPanel.ElementEasing>
@@ -68,43 +104,8 @@
                 </ItemsControl>
             </ScrollViewer>
 
-            <StatusBar Grid.Row="2" Grid.ColumnSpan="2"></StatusBar>
-            
-            <ToolBarTray Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
-                <ToolBar HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="35">
-                    <Button>
-                        <StackPanel Orientation="Horizontal">
-                            <Rectangle Width="16" Height="16" >
-                                <Rectangle.Fill>
-                                    <VisualBrush Visual="{StaticResource appbar_disconnect}" />
-                                </Rectangle.Fill>
-                            </Rectangle>
-                            <Label>Connect to all</Label>
-                        </StackPanel>
-                    </Button>
+            <StatusBar Grid.Row="3" Grid.ColumnSpan="2"></StatusBar>
 
-                    <Button>
-                        <StackPanel Orientation="Horizontal">
-                            <Rectangle Width="16" Height="16">
-                                <Rectangle.Fill>
-                                    <VisualBrush Visual="{StaticResource appbar_connect}" />
-                                </Rectangle.Fill>
-                            </Rectangle>
-                            <Label>Disconnect all</Label>
-                        </StackPanel>
-                    </Button>
-                    <Button>
-                        <StackPanel Orientation="Horizontal">
-                            <Rectangle Width="16" Height="16" >
-                                <Rectangle.Fill>
-                                    <VisualBrush Visual="{StaticResource appbar_disconnect}" />
-                                </Rectangle.Fill>
-                            </Rectangle>
-                            <Label>Share all</Label>
-                        </StackPanel>
-                    </Button>
-                </ToolBar>
-            </ToolBarTray>
         </Grid>
     </Border>
 </UserControl>
