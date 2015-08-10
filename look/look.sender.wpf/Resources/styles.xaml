@@ -60,7 +60,7 @@
                                 <Border Name="MainBorder"
                                     Grid.ColumnSpan="9" Grid.RowSpan="9"
                                     CornerRadius="4"
-                                    BorderThickness="1"
+                                    BorderThickness="5"
                                     Background="Transparent" />
 
                                 <Border Name="InnerBorder"

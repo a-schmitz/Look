@@ -9,11 +9,15 @@
 
 namespace look.sender.wpf.controls
 {
+    #region
+
     using System.Collections.Generic;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
+
+    #endregion
 
     /// <summary>
     ///     Interaction logic for WindowTile.xaml
@@ -26,37 +30,25 @@ namespace look.sender.wpf.controls
         ///     The checked property.
         /// </summary>
         public static readonly DependencyProperty CheckedProperty = DependencyProperty.Register(
-            "Checked", 
-            typeof(bool), 
-            typeof(WindowTile), 
-            new PropertyMetadata(default(bool)));
+            "Checked", typeof(bool), typeof(WindowTile), new PropertyMetadata(default(bool)));
 
         /// <summary>
         ///     The window title property.
         /// </summary>
         public static readonly DependencyProperty WindowTitleProperty = DependencyProperty.Register(
-            "WindowTitle", 
-            typeof(string), 
-            typeof(WindowTile), 
-            new PropertyMetadata(default(string)));
+            "WindowTitle", typeof(string), typeof(WindowTile), new PropertyMetadata(default(string)));
 
         /// <summary>
         ///     The disabled image property.
         /// </summary>
         public static DependencyProperty ApplicationImageProperty = DependencyProperty.Register(
-            "ApplicationImage", 
-            typeof(ImageSource), 
-            typeof(WindowTile), 
-            new UIPropertyMetadata(null));
+            "ApplicationImage", typeof(ImageSource), typeof(WindowTile), new UIPropertyMetadata(null));
 
         /// <summary>
         ///     The application name property.
         /// </summary>
         public static DependencyProperty ApplicationNameProperty = DependencyProperty.Register(
-            "ApplicationName", 
-            typeof(string), 
-            typeof(WindowTile), 
-            new UIPropertyMetadata(null));
+            "ApplicationName", typeof(string), typeof(WindowTile), new UIPropertyMetadata(null));
 
         /// <summary>
         ///     The color counter.
@@ -88,15 +80,8 @@ namespace look.sender.wpf.controls
         /// </summary>
         public ImageSource ApplicationImage
         {
-            get
-            {
-                return (ImageSource)this.GetValue(ApplicationImageProperty);
-            }
-
-            set
-            {
-                this.SetValue(ApplicationImageProperty, value);
-            }
+            get { return (ImageSource)this.GetValue(ApplicationImageProperty); }
+            set { this.SetValue(ApplicationImageProperty, value); }
         }
 
         /// <summary>
@@ -104,52 +89,34 @@ namespace look.sender.wpf.controls
         /// </summary>
         public string ApplicationName
         {
-            get
-            {
-                return (string)this.GetValue(ApplicationNameProperty);
-            }
-
-            set
-            {
-                this.SetValue(ApplicationNameProperty, value);
-            }
+            get { return (string)this.GetValue(ApplicationNameProperty); }
+            set { this.SetValue(ApplicationNameProperty, value); }
         }
 
         /// <summary>
         ///     Gets or sets a value indicating whether checked.
         /// </summary>
-        public bool Checked
-        {
-            get
-            {
-                return (bool)this.GetValue(CheckedProperty);
-            }
-
-            set
-            {
-                this.SetValue(CheckedProperty, value);
-            }
-        }
+        public bool Checked { get { return (bool)this.GetValue(CheckedProperty); } set { this.SetValue(CheckedProperty, value); } }
 
         /// <summary>
         ///     Gets or sets the window title.
         /// </summary>
-        public string WindowTitle
-        {
-            get
-            {
-                return (string)this.GetValue(WindowTitleProperty);
-            }
-
-            set
-            {
-                this.SetValue(WindowTitleProperty, value);
-            }
-        }
+        public string WindowTitle { get { return (string)this.GetValue(WindowTitleProperty); } set { this.SetValue(WindowTitleProperty, value); } }
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// The check box_ click.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void CheckBox_Click(object sender, RoutedEventArgs e) { e.Handled = true; }
 
         /// <summary>
         /// The layout root_ click.
@@ -163,6 +130,7 @@ namespace look.sender.wpf.controls
         private void LayoutRoot_Click(object sender, RoutedEventArgs e)
         {
             this.Checked = !this.Checked;
+            e.Handled = true;
         }
 
         /// <summary>
@@ -177,6 +145,7 @@ namespace look.sender.wpf.controls
         private void UserControl_MouseUp(object sender, MouseButtonEventArgs e)
         {
             this.Checked = !this.Checked;
+            e.Handled = true;
         }
 
         /// <summary>
@@ -194,10 +163,7 @@ namespace look.sender.wpf.controls
             this.Background = brush;
 
             colorCounter++;
-            if (colorCounter == colors.Count)
-            {
-                colorCounter = 0;
-            }
+            if (colorCounter == colors.Count) colorCounter = 0;
         }
 
         #endregion

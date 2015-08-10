@@ -9,12 +9,16 @@
 
 namespace look.sender.wpf.Views
 {
+    #region
+
     using System.Windows;
     using System.Windows.Controls;
 
     using look.sender.wpf.Interfaces;
 
     using ReactiveUI;
+
+    #endregion
 
     /// <summary>
     ///     Interaction logic for MainView.xaml
@@ -27,18 +31,15 @@ namespace look.sender.wpf.Views
         ///     The view model property.
         /// </summary>
         public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
-            "ViewModel", 
-            typeof(IHomeViewModel), 
-            typeof(HomeView), 
-            new PropertyMetadata(null));
+            "ViewModel", typeof(IHomeViewModel), typeof(HomeView), new PropertyMetadata(null));
 
         #endregion
 
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HomeView"/> class. 
-        ///     Initializes a new instance of the <see cref="MainView"/> class.
+        ///     Initializes a new instance of the <see cref="HomeView" /> class.
+        ///     Initializes a new instance of the <see cref="MainView" /> class.
         /// </summary>
         public HomeView()
         {
@@ -56,15 +57,8 @@ namespace look.sender.wpf.Views
         /// </summary>
         public IHomeViewModel ViewModel
         {
-            get
-            {
-                return (IHomeViewModel)this.GetValue(ViewModelProperty);
-            }
-
-            set
-            {
-                this.SetValue(ViewModelProperty, value);
-            }
+            get { return (IHomeViewModel)this.GetValue(ViewModelProperty); }
+            set { this.SetValue(ViewModelProperty, value); }
         }
 
         #endregion
@@ -74,18 +68,7 @@ namespace look.sender.wpf.Views
         /// <summary>
         ///     Gets or sets the view model.
         /// </summary>
-        object IViewFor.ViewModel
-        {
-            get
-            {
-                return this.ViewModel;
-            }
-
-            set
-            {
-                this.ViewModel = (IHomeViewModel)value;
-            }
-        }
+        object IViewFor.ViewModel { get { return this.ViewModel; } set { this.ViewModel = (IHomeViewModel)value; } }
 
         #endregion
     }

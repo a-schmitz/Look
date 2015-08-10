@@ -9,8 +9,12 @@
 
 namespace look.sender.wpf.Models
 {
+    #region
+
     using System;
     using System.Windows.Media;
+
+    #endregion
 
     /// <summary>
     ///     The shareable window.
@@ -38,6 +42,11 @@ namespace look.sender.wpf.Models
         ///     Gets or sets the id.
         /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether is shared.
+        /// </summary>
+        public bool IsShared { get; set; }
 
         /// <summary>
         ///     Gets or sets the process name.

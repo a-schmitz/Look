@@ -25,7 +25,7 @@
                     </Grid.RowDefinitions>
 
                     <Image Grid.Row="1" Grid.Column="2" VerticalAlignment="Bottom"  Source="{Binding Path=ApplicationImage}" Width="24" Height="24" Margin="0,0,3,10" />
-                    <CheckBox Content="" Grid.Row="0" Grid.Column="2" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding Checked}" Height="Auto" Margin="0,5,0,0"/>
+                    <CheckBox Content="" Grid.Row="0" Grid.Column="2" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding Checked, Mode=TwoWay}" Height="Auto" Margin="0,5,0,0" ClickMode="Press" Click="CheckBox_Click"/>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="10" TextAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=ApplicationName}" Foreground="Gainsboro" Margin="10,0,0,0"></TextBlock>
                     <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontSize="14" TextAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=WindowTitle}" Margin="10,0,0,0"></TextBlock>

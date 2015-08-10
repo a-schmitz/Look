@@ -18,6 +18,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="25"></RowDefinition>
             </Grid.RowDefinitions>
 
             <ListView Grid.Row="1">
@@ -61,12 +62,14 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <controls:WindowTile Width="250" Height="100" ApplicationImage="{Binding Icon}" 
-							ApplicationName="{Binding Application}" WindowTitle="{Binding Title}" />
+							ApplicationName="{Binding Application}" WindowTitle="{Binding Title}" Checked="{Binding IsShared}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
 
+            <StatusBar Grid.Row="2" Grid.ColumnSpan="2"></StatusBar>
+            
             <ToolBarTray Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
                 <ToolBar HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="35">
                     <Button>

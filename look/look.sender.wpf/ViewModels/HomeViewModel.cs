@@ -9,6 +9,8 @@
 
 namespace look.sender.wpf.ViewModels
 {
+    #region
+
     using System;
     using System.Diagnostics;
     using System.Reactive.Disposables;
@@ -18,6 +20,8 @@ namespace look.sender.wpf.ViewModels
     using look.sender.wpf.Services;
 
     using ReactiveUI;
+
+    #endregion
 
     /// <summary>
     ///     The main view model.
@@ -55,12 +59,11 @@ namespace look.sender.wpf.ViewModels
 
             this.ShareableWindows = new ReactiveList<ShareableWindow>(this.WindowService.GetShareableWindows());
 
-            this.Favorites = new ReactiveList<Favorite>
-                                 {
-                                     new Favorite() { Name = "HAN07WST12345" }, 
-                                     new Favorite() { Name = "HAN07WST54321" }, 
-                                     new Favorite() { Name = "HAN07WST23321" }
-                                 };
+            this.Favorites = new ReactiveList<Favorite> {
+                new Favorite() { Name = "HAN07WST12345" }, 
+                new Favorite() { Name = "HAN07WST54321" }, 
+                new Favorite() { Name = "HAN07WST23321" }
+            };
 
             this.WhenNavigatedTo(this.InitViewModel);
         }
@@ -72,18 +75,7 @@ namespace look.sender.wpf.ViewModels
         /// <summary>
         ///     Gets or sets the favorites.
         /// </summary>
-        public ReactiveList<Favorite> Favorites
-        {
-            get
-            {
-                return this.favorites;
-            }
-
-            set
-            {
-                this.RaiseAndSetIfChanged(ref this.favorites, value);
-            }
-        }
+        public ReactiveList<Favorite> Favorites { get { return this.favorites; } set { this.RaiseAndSetIfChanged(ref this.favorites, value); } }
 
         /// <summary>
         ///     Gets the host screen.
@@ -95,27 +87,14 @@ namespace look.sender.wpf.ViewModels
         /// </summary>
         public ReactiveList<ShareableWindow> ShareableWindows
         {
-            get
-            {
-                return this.shareableWindows;
-            }
-
-            set
-            {
-                this.RaiseAndSetIfChanged(ref this.shareableWindows, value);
-            }
+            get { return this.shareableWindows; }
+            set { this.RaiseAndSetIfChanged(ref this.shareableWindows, value); }
         }
 
         /// <summary>
         ///     Gets the url path segment.
         /// </summary>
-        public string UrlPathSegment
-        {
-            get
-            {
-                return "home";
-            }
-        }
+        public string UrlPathSegment { get { return "home"; } }
 
         #endregion
 
