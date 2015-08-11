@@ -10,81 +10,91 @@
         mc:Ignorable="d" 
         x:Class="look.sender.wpf.Views.HomeView"
         d:DesignHeight="500" d:DesignWidth="768">
+   
     <Border BorderBrush="#FF4B4B4B" BorderThickness="1">
-        <Grid>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="35"></RowDefinition>
-                <RowDefinition Height="40"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="25"></RowDefinition>
-            </Grid.RowDefinitions>
+        <TabControl controls1:TabControlHelper.IsUnderlined="True" Margin="0,0,0,0" TabStripPlacement="Bottom" >
+            <TabItem Header="My Shares" controls1:ControlsHelper.HeaderFontSize="18">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="250" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35"></RowDefinition>
+                        <RowDefinition Height="40"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="15"></RowDefinition>
+                    </Grid.RowDefinitions>
 
-            <Border BorderBrush="White" BorderThickness="0,0,0,1">
-                <StackPanel Orientation="Horizontal">
-                    <Button Background="{StaticResource GradientDark}" Width="30" Height="30" Margin="5,0,0,0" Click="Button_Click">
-                        <Rectangle Width="15" Height="15">
-                            <Rectangle.Fill>
-                                <VisualBrush Visual="{StaticResource appbar_magnify_add}" />
-                            </Rectangle.Fill>
-                        </Rectangle>
-                    </Button>
-                    <Label Content="Favorites" FontSize="18" Margin="0"></Label>
-                </StackPanel>
-            </Border>
+                    <Border BorderBrush="White" BorderThickness="0,0,0,1">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Background="{StaticResource GradientDark}" Width="30" Height="30" Margin="5,0,0,0" Click="Button_Click">
+                                <Rectangle Width="15" Height="15">
+                                    <Rectangle.Fill>
+                                        <VisualBrush Visual="{StaticResource appbar_magnify_add}" />
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Button>
+                            <Label Content="Favorites" FontSize="18" Margin="0"></Label>
+                        </StackPanel>
+                    </Border>
 
-            <Border Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="White" >
-                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" FontSize="18" Foreground="White" >
+                    <Border Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="White" >
+                        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" FontSize="18" Foreground="White" >
                     <Run Text="Shared Applications with"></Run>
                     <Run Text="{Binding SelectedFavorite.Name}"></Run>
-                </TextBlock>
-            </Border>
+                        </TextBlock>
+                    </Border>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Stretch" Margin="0,5,0,0">
-                <Border Background="{StaticResource GradientDark}" Height="30"  Margin="8,0,9,0" BorderThickness="1" BorderBrush="White" CornerRadius="5">
-                    <TextBox Width="189" controls1:TextBoxHelper.Watermark="Quickadd" FontSize="14" BorderThickness="0" Background="{x:Null}"></TextBox>
-                </Border>
-                <Button Width="30" Height="30" Background="{StaticResource GradientDark}">
-                    <Rectangle Width="15" Height="15">
-                        <Rectangle.Fill>
-                            <VisualBrush Visual="{StaticResource appbar_add}" />
-                        </Rectangle.Fill>
-                    </Rectangle>
-                </Button>
-            </StackPanel>
-            
-            <ListView x:Name="FavoriteList" Grid.Row="2" BorderThickness="0,0,0,0"  ItemsSource="{Binding Favorites}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <controls:FavoriteItem Margin="5,0"  Title="{Binding Name}" SubTitle="{Binding IPAddress}"></controls:FavoriteItem>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Stretch" Margin="0,5,0,0">
+                        <Border Background="{StaticResource GradientDark}" Height="30"  Margin="8,0,9,0" BorderThickness="1" BorderBrush="White" CornerRadius="5">
+                            <TextBox Width="189" controls1:TextBoxHelper.Watermark="Quickadd" FontSize="14" BorderThickness="0" Background="{x:Null}"></TextBox>
+                        </Border>
+                        <Button Width="30" Height="30" Background="{StaticResource GradientDark}">
+                            <Rectangle Width="15" Height="15">
+                                <Rectangle.Fill>
+                                    <VisualBrush Visual="{StaticResource appbar_add}" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </Button>
+                    </StackPanel>
 
-            <ScrollViewer Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Background="#FF2E3030" Margin="10">
-                <ItemsControl x:Name="sharedWindows" ItemsSource="{Binding ShareableWindows}" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            
-                            <AnimatingTilePanel:AnimatingTilePanel ItemHeight="105" ItemWidth="255" HorizontalAlignment="Left" />
-                           
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <controls:WindowTile Width="250" Height="100" ApplicationImage="{Binding Icon}" 
+                    <ListView x:Name="FavoriteList" Grid.Row="2" BorderThickness="0,0,0,0"  ItemsSource="{Binding Favorites}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <controls:FavoriteItem Margin="5,0"  Title="{Binding Name}" SubTitle="{Binding IPAddress}"></controls:FavoriteItem>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <ScrollViewer Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Background="#FF2E3030" Margin="10">
+                        <ItemsControl x:Name="sharedWindows" ItemsSource="{Binding ShareableWindows}" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+
+                                    <AnimatingTilePanel:AnimatingTilePanel ItemHeight="105" ItemWidth="255" HorizontalAlignment="Left" />
+
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <controls:WindowTile Width="250" Height="100" ApplicationImage="{Binding Icon}" 
 							ApplicationName="{Binding Application}" WindowTitle="{Binding Title}" Checked="{Binding IsShared, Mode=TwoWay}" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
 
-            <StatusBar Grid.Row="3" Grid.ColumnSpan="2"></StatusBar>
+                    <Border Grid.Row="4" Grid.ColumnSpan="2" BorderThickness="0,1,0,0" BorderBrush="Azure"></Border>
 
-        </Grid>
+                </Grid>
+
+            </TabItem>
+            <TabItem Header="Google Chrome" controls1:ControlsHelper.HeaderFontSize="18" />
+
+        </TabControl>
+
+
     </Border>
 </UserControl>
