@@ -72,10 +72,6 @@
       <HintPath>..\packages\Rx-XAML.2.2.5\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -87,7 +83,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WPFSpark, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -166,32 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\VisualStudio.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="libraries\WPFSpark\de\Microsoft.Expression.Interactions.resources.dll" />
-    <Content Include="libraries\WPFSpark\de\System.Windows.Interactivity.resources.dll" />
-    <Content Include="libraries\WPFSpark\en\Microsoft.Expression.Interactions.resources.dll" />
-    <Content Include="libraries\WPFSpark\en\System.Windows.Interactivity.resources.dll" />
-    <Content Include="libraries\WPFSpark\es\Microsoft.Expression.Interactions.resources.dll" />
-    <Content Include="libraries\WPFSpark\es\System.Windows.Interactivity.resources.dll" />
-    <Content Include="libraries\WPFSpark\fr\Microsoft.Expression.Interactions.resources.dll" />
-    <Content Include="libraries\WPFSpark\fr\System.Windows.Interactivity.resources.dll" />
-    <Content Include="libraries\WPFSpark\it\Microsoft.Expression.Interactions.resources.dll" />
-    <Content Include="libraries\WPFSpark\it\System.Windows.Interactivity.resources.dll" />
-    <Content Include="libraries\WPFSpark\ja\Microsoft.Expression.Interactions.resources.dll" />
-    <Content Include="libraries\WPFSpark\ja\System.Windows.Interactivity.resources.dll" />
-    <Content Include="libraries\WPFSpark\ko\Microsoft.Expression.Interactions.resources.dll" />
-    <Content Include="libraries\WPFSpark\ko\System.Windows.Interactivity.resources.dll" />
-    <Content Include="libraries\WPFSpark\Microsoft.Expression.Interactions.dll" />
-    <Resource Include="libraries\WPFSpark\Microsoft.Expression.Interactions.xml" />
-    <Content Include="libraries\WPFSpark\System.Windows.Interactivity.dll" />
-    <Resource Include="libraries\WPFSpark\System.Windows.Interactivity.xml" />
-    <Content Include="libraries\WPFSpark\WPFSpark.dll" />
-    <Content Include="libraries\WPFSpark\WPFSpark.pdb" />
-    <Content Include="libraries\WPFSpark\zh-Hans\Microsoft.Expression.Interactions.resources.dll" />
-    <Content Include="libraries\WPFSpark\zh-Hans\System.Windows.Interactivity.resources.dll" />
-    <Content Include="libraries\WPFSpark\zh-Hant\Microsoft.Expression.Interactions.resources.dll" />
-    <Content Include="libraries\WPFSpark\zh-Hant\System.Windows.Interactivity.resources.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\look.sender.wpf.controls\look.sender.wpf.controls.csproj">

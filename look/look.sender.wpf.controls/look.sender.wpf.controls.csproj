@@ -51,6 +51,22 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="3rdParty\AnimatingTilePanel\ActionOnDispose.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\AnimatingPanel.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\AnimatingTilePanel.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\CastList.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\CollectionExtensions.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\CompositionTargetRenderingListener.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\Extensions.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\GeoHelper.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\InstanceFactory.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\ListBase.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\ObservableCollectionPlus.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\QuickSort.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\TreeHelper.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\Util.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\WpfUtil.cs" />
+    <Compile Include="3rdParty\AnimatingTilePanel\WrappedLock.cs" />
     <Compile Include="FavoriteItem.xaml.cs">
       <DependentUpon>FavoriteItem.xaml</DependentUpon>
     </Compile>

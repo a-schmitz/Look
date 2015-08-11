@@ -7,13 +7,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace look.sender.wpf.Models
-{
+namespace look.sender.wpf.Models {
+
     /// <summary>
     ///     The favorite.
     /// </summary>
-    public class Favorite
-    {
+    public class Favorite {
         #region Public Properties
 
         /// <summary>
@@ -33,4 +32,5 @@ namespace look.sender.wpf.Models
 
         #endregion
     }
+
 }

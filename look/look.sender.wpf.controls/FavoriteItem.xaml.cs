@@ -9,11 +9,15 @@
 
 namespace look.sender.wpf.controls
 {
+    #region
+
     using System;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Threading;
+
+    #endregion
 
     /// <summary>
     ///     Interaction logic for FavoriteItem.xaml
@@ -26,10 +30,19 @@ namespace look.sender.wpf.controls
         ///     The connected property.
         /// </summary>
         public static readonly DependencyProperty ConnectedProperty = DependencyProperty.Register(
-            "Connected", 
-            typeof(bool), 
-            typeof(FavoriteItem), 
-            new PropertyMetadata(default(bool)));
+            "Connected", typeof(bool), typeof(FavoriteItem), new PropertyMetadata(default(bool)));
+
+        /// <summary>
+        ///     The sub title property.
+        /// </summary>
+        public static readonly DependencyProperty SubTitleProperty = DependencyProperty.Register(
+            "SubTitle", typeof(string), typeof(FavoriteItem), new PropertyMetadata(default(string)));
+
+        /// <summary>
+        ///     The title property.
+        /// </summary>
+        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
+            "Title", typeof(string), typeof(FavoriteItem), new PropertyMetadata(default(string)));
 
         #endregion
 
@@ -38,7 +51,7 @@ namespace look.sender.wpf.controls
         /// <summary>
         ///     The dispatcher timer.
         /// </summary>
-        private DispatcherTimer dispatcherTimer;
+        private readonly DispatcherTimer dispatcherTimer;
 
         #endregion
 
@@ -47,8 +60,7 @@ namespace look.sender.wpf.controls
         /// <summary>
         ///     Initializes a new instance of the <see cref="FavoriteItem" /> class.
         /// </summary>
-        public FavoriteItem()
-        {
+        public FavoriteItem() {
             this.InitializeComponent();
 
             this.LayoutRoot.DataContext = this;
@@ -66,18 +78,17 @@ namespace look.sender.wpf.controls
         /// <summary>
         ///     Gets or sets a value indicating whether connected.
         /// </summary>
-        public bool Connected
-        {
-            get
-            {
-                return (bool)this.GetValue(ConnectedProperty);
-            }
+        public bool Connected { get { return (bool)this.GetValue(ConnectedProperty); } set { this.SetValue(ConnectedProperty, value); } }
 
-            set
-            {
-                this.SetValue(ConnectedProperty, value);
-            }
-        }
+        /// <summary>
+        ///     Gets or sets the sub title.
+        /// </summary>
+        public string SubTitle { get { return (string)this.GetValue(SubTitleProperty); } set { this.SetValue(SubTitleProperty, value); } }
+
+        /// <summary>
+        ///     Gets or sets the title.
+        /// </summary>
+        public string Title { get { return (string)this.GetValue(TitleProperty); } set { this.SetValue(TitleProperty, value); } }
 
         #endregion
 
@@ -92,15 +103,11 @@ namespace look.sender.wpf.controls
         /// <param name="e">
         /// The e.
         /// </param>
-        private void borderConnect_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (!this.Connected)
-            {
+        private void borderConnect_MouseUp(object sender, MouseButtonEventArgs e) {
+            if (!this.Connected) {
                 VisualStateManager.GoToElementState(this.LayoutRoot, "StateConnecting", false);
                 this.dispatcherTimer.Start();
-            }
-            else
-            {
+            } else {
                 VisualStateManager.GoToElementState(this.LayoutRoot, "StateDisconnected", false);
                 this.Connected = false;
             }
@@ -115,8 +122,7 @@ namespace look.sender.wpf.controls
         /// <param name="e">
         /// The e.
         /// </param>
-        private void dispatcherTimer_Tick(object sender, EventArgs e)
-        {
+        private void dispatcherTimer_Tick(object sender, EventArgs e) {
             // TODO: REMOVE!
             this.dispatcherTimer.Stop();
             VisualStateManager.GoToElementState(this.LayoutRoot, "StateConnected", false);
@@ -125,4 +131,5 @@ namespace look.sender.wpf.controls
 
         #endregion
     }
+
 }

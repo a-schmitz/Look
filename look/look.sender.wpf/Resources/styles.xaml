@@ -11,175 +11,112 @@
         </Style.Triggers>
     </Style>
 
-    <SolidColorBrush x:Key="ConnectedBrush" Color="Tomato"></SolidColorBrush>
+    <Color x:Key="TransparentWhiteColor">#33FFFFFF</Color>
+    <SolidColorBrush x:Key="TransparentWhiteBrush" Color="{StaticResource TransparentWhiteColor}"></SolidColorBrush>
+
+    <Color x:Key="TransparentGreenColor">#CC72E086</Color>
+    <SolidColorBrush x:Key="TransparentGreenBrush" Color="{StaticResource TransparentGreenColor}"/>
+
+    <Style x:Key="WindowTileCheckboxStyle" TargetType="ToggleButton">
+        <Setter Property="FocusVisualStyle"
+                Value="{StaticResource MetroCircleButtonFocusVisual}" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="2" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource GrayBrush3}" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Center" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource BlackBrush}" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Center" />
+        <Setter Property="Padding"
+                Value="1" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Grid>
+                        <Ellipse Fill="{TemplateBinding Background}"
+                                 Margin="4"
+                                 StrokeThickness="0" />
+                        <Ellipse x:Name="ellipsebg"
+                                 Fill="{StaticResource TransparentGreenBrush}"
+                                 Opacity="0"
+                                 Margin="4"
+                                 StrokeThickness="0" />
+                        <Ellipse x:Name="ellipse"
+                                 Margin="4"
+                                 Stroke="{TemplateBinding BorderBrush}"
+                                 StrokeThickness="{Binding RelativeSource={x:Static RelativeSource.TemplatedParent}, Path=BorderThickness.Left}" />
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"
+                                          RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ToggleButton.IsChecked"
+                                 Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ellipsebg"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         From="0"
+                                                         To="1"
+                                                         Duration="0:0:0.3" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <!-- some out fading -->
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ellipsebg"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0"
+                                                         Duration="0:0:0.3" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource IdealForegroundColorBrush}" />
+                            <Setter TargetName="ellipse"
+                                    Property="Stroke"
+                                    Value="{DynamicResource AccentColorBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="ellipse"
+                                    Property="Opacity"
+                                    Value="1" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver"
+                                 Value="False">
+                            <Setter TargetName="ellipse"
+                                    Property="Opacity"
+                                    Value="0.7" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource GrayBrush7}" />
+                            <Setter TargetName="ellipse"
+                                    Property="Opacity"
+                                    Value="0.3" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <LinearGradientBrush x:Key="GradientDark">
         <GradientStop Color="#FF1E1E1E" Offset="0"/>
         <GradientStop Color="#FF252526" Offset="1"/>
     </LinearGradientBrush>
-
-    <Style x:Key="TextboxWatermark" TargetType="{x:Type TextBox}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type TextBox}">
-                    <Grid>
-                        <Border BorderBrush="#FFCCCCCC" BorderThickness="1" Background="{StaticResource GradientDark}" CornerRadius="5" />
-
-                        <ScrollViewer x:Name="PART_ContentHost" Margin="5,0,0,0" VerticalAlignment="Center" />
-                        <Label Margin="5,0,0,0" x:Name="WaterMarkLabel" Content="{TemplateBinding Tag}" VerticalAlignment="Center"
-                               Visibility="Collapsed" Foreground="Gray" FontFamily="Arial"/>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="Text" Value=""/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Visibility" TargetName="WaterMarkLabel" Value="Visible"/>
-                        </MultiTrigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="DimGray"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="MyFocusVisualStyle" >
-        <Setter Property="Control.Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Rectangle x:Name="FocusStyle" StrokeDashArray="4 4" RadiusX="5" RadiusY="5" Fill="Transparent"
-                           Stroke="#81d2eb" StrokeThickness="1" />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="CheckBoxStyle" TargetType="{x:Type CheckBox}">
-        <Setter Property="SnapsToDevicePixels" Value="true" />
-        <Setter Property="OverridesDefaultStyle" Value="true" />
-        <Setter Property="Height" Value="30" />
-        <Setter Property="FocusVisualStyle" Value="{DynamicResource MyFocusVisualStyle}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type CheckBox}">
-                    <BulletDecorator>
-                        <BulletDecorator.Bullet>
-                            <Grid Height="{TemplateBinding Height}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Height, UpdateSourceTrigger=PropertyChanged}"
-                              MinHeight="30" MinWidth="30" ShowGridLines="False">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="4*" />
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="4*" />
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="2*" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="3*" />
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="4*" />
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="4*" />
-                                </Grid.RowDefinitions>
-
-                                <Border Name="MainBorder"
-                                    Grid.ColumnSpan="9" Grid.RowSpan="9"
-                                    CornerRadius="4"
-                                    BorderThickness="5"
-                                    Background="Transparent" />
-
-                                <Border Name="InnerBorder"
-                                    Grid.Column="1" Grid.ColumnSpan="5"
-                                    Grid.Row="2" Grid.RowSpan="5"
-                                    BorderThickness="1"
-                                    BorderBrush="White" />
-
-                                <Path Name="InnerPath"
-                                  Grid.Column="1" Grid.ColumnSpan="5"
-                                  Grid.Row="2" Grid.RowSpan="5"
-                                  Data="M31,5 L19.5,5 19.5,19.5 34.5,19.5 34.5,11.75"
-                                  Stretch="Fill" Stroke="White"/>
-
-                                <Path Name="CheckMark"
-                                  Grid.Column="2" Grid.ColumnSpan="5"
-                                  Grid.Row="1" Grid.RowSpan="5"
-                                  Opacity="0"
-                                  Data="M9.07743946676476E-09,4.31805768640244L4.68740335877841,8.86361158398516C4.68740335877841,8.86361158398516,16.3281249985376,-2.42451336648723,16.3281249985376,-2.42451336648723L14.0622100581796,-4.77304938341948 4.68740335877846,4.31805791992662 2.22656251699567,1.93164208562579z"
-                                  Stretch="Fill"
-                                  Stroke="#FF414141" >
-                                    <Path.Fill>
-                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                            <GradientStop Color="#FFADDDB4" Offset="0"/>
-                                            <GradientStop Color="#FF50E465" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Path.Fill>
-                                </Path>
-
-                                <Path Name="InderminateMark"
-                                  Grid.Column="3"
-                                  Grid.Row="4"
-                                  Data="M0,4 L1,5 5,1 4,0"
-                                  Opacity="0"
-                                  Stretch="Fill"
-                                  StrokeThickness="0"
-                                  Fill="White" />
-                            </Grid>
-                        </BulletDecorator.Bullet>
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CheckStates">
-                                <VisualState x:Name="Checked">
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                             Storyboard.TargetName="CheckMark" Duration="0:0:0.2" To="1" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Unchecked" >
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                             Storyboard.TargetName="CheckMark" Duration="0:0:0.2" To="0" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Indeterminate">
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                             Storyboard.TargetName="InderminateMark" Duration="0:0:0.2" To="1" />
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                        <ContentPresenter Margin="4,0,4,0"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"
-                        RecognizesAccessKey="True" />
-                    </BulletDecorator>
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="InnerBorder" Property="Visibility" Value="Collapsed" />
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="MainBorder" Property="Background" Value="#81d2eb" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="CheckMark" Property="Fill" Value="#cccccc" />
-                            <Setter TargetName="CheckMark" Property="Stroke" Value="#cccccc" />
-                            <Setter TargetName="InnerPath" Property="Stroke" Value="#cccccc" />
-                            <Setter TargetName="InderminateMark" Property="Fill" Value="#cccccc" />
-                            <Setter TargetName="InnerBorder" Property="BorderBrush" Value="#cccccc" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
 
 
 </ResourceDictionary>

@@ -68,12 +68,9 @@
                 </Rectangle>
             </Border>
             <Controls:ProgressRing x:Name="Progress" Visibility="Hidden" IsActive="True" Width="20" Height="20" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"/>
-            <TextBlock VerticalAlignment="Center" Grid.Column="1"  Grid.Row="0" Text="HAN07WKS00015" FontSize="14" />
-            <TextBlock VerticalAlignment="Top" Grid.Column="1"  Grid.Row="1" Text="192.168.150.2" FontSize="12" Foreground="#FFA8A8A8" />
+            <TextBlock VerticalAlignment="Center" Grid.Column="1"  Grid.Row="0" Text="{Binding Title}" FontSize="14" />
+            <TextBlock VerticalAlignment="Top" Grid.Column="1"  Grid.Row="1" Text="{Binding SubTitle}" FontSize="12" Foreground="#FFA8A8A8" />
          
-
-
-
         </Grid>
     </Border>
 

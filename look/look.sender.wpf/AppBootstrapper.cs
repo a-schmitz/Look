@@ -9,6 +9,8 @@
 
 namespace look.sender.wpf.ViewModels
 {
+    #region
+
     using System.Reactive.Concurrency;
     using System.Windows;
 
@@ -17,6 +19,8 @@ namespace look.sender.wpf.ViewModels
     using ReactiveUI;
 
     using Splat;
+
+    #endregion
 
     /// <summary>
     ///     The app bootstrapper.
@@ -34,8 +38,7 @@ namespace look.sender.wpf.ViewModels
         /// <param name="testRouter">
         /// The test router.
         /// </param>
-        public AppBootstrapper(IMutableDependencyResolver dependencyResolver = null, RoutingState testRouter = null)
-        {
+        public AppBootstrapper(IMutableDependencyResolver dependencyResolver = null, RoutingState testRouter = null) {
             this.Router = testRouter ?? new RoutingState();
             dependencyResolver = dependencyResolver ?? Locator.CurrentMutable;
 
@@ -71,8 +74,7 @@ namespace look.sender.wpf.ViewModels
         /// <param name="dependencyResolver">
         /// The dependency resolver.
         /// </param>
-        private void RegisterParts(IMutableDependencyResolver dependencyResolver)
-        {
+        private void RegisterParts(IMutableDependencyResolver dependencyResolver) {
             dependencyResolver.RegisterConstant(this, typeof(IScreen));
 
             dependencyResolver.Register(() => new HomeView(), typeof(IViewFor<HomeViewModel>));
@@ -80,4 +82,5 @@ namespace look.sender.wpf.ViewModels
 
         #endregion
     }
+
 }

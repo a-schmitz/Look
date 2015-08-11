@@ -9,9 +9,13 @@
 
 namespace look.sender.wpf.Views
 {
+    #region
+
     using look.sender.wpf.ViewModels;
 
     using MahApps.Metro.Controls;
+
+    #endregion
 
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
@@ -21,10 +25,9 @@ namespace look.sender.wpf.Views
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MainWindow"/> class.
+        ///     Initializes a new instance of the <see cref="MainWindow" /> class.
         /// </summary>
-        public MainWindow()
-        {
+        public MainWindow() {
             this.InitializeComponent();
 
             this.AppBootstrapper = new AppBootstrapper();
@@ -36,10 +39,11 @@ namespace look.sender.wpf.Views
         #region Public Properties
 
         /// <summary>
-        /// Gets or sets the app bootstrapper.
+        ///     Gets or sets the app bootstrapper.
         /// </summary>
         public AppBootstrapper AppBootstrapper { get; protected set; }
 
         #endregion
     }
+
 }

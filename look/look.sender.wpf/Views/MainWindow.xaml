@@ -4,7 +4,7 @@
         xmlns:rx="clr-namespace:ReactiveUI;assembly=ReactiveUI"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:controls1="clr-namespace:look.sender.wpf.controls;assembly=look.sender.wpf.controls"
-        Title="MainWindow" Height="500" Width="1000">
+        Title="MainWindow" Height="500" Width="1060">
     <Grid>
 
         <rx:RoutedViewHost 

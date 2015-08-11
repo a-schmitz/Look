@@ -62,8 +62,7 @@ namespace look.sender.wpf.controls
         /// <summary>
         ///     Initializes a new instance of the <see cref="WindowTile" /> class.
         /// </summary>
-        public WindowTile()
-        {
+        public WindowTile() {
             this.InitializeComponent();
 
             this.LayoutRoot.DataContext = this;
@@ -78,8 +77,7 @@ namespace look.sender.wpf.controls
         /// <summary>
         ///     Gets or sets the image.
         /// </summary>
-        public ImageSource ApplicationImage
-        {
+        public ImageSource ApplicationImage {
             get { return (ImageSource)this.GetValue(ApplicationImageProperty); }
             set { this.SetValue(ApplicationImageProperty, value); }
         }
@@ -87,8 +85,7 @@ namespace look.sender.wpf.controls
         /// <summary>
         ///     Gets or sets the application name.
         /// </summary>
-        public string ApplicationName
-        {
+        public string ApplicationName {
             get { return (string)this.GetValue(ApplicationNameProperty); }
             set { this.SetValue(ApplicationNameProperty, value); }
         }
@@ -116,7 +113,9 @@ namespace look.sender.wpf.controls
         /// <param name="e">
         /// The e.
         /// </param>
-        private void CheckBox_Click(object sender, RoutedEventArgs e) { e.Handled = true; }
+        private void CheckBox_Click(object sender, RoutedEventArgs e) {
+            e.Handled = true;
+        }
 
         /// <summary>
         /// The layout root_ click.
@@ -127,8 +126,7 @@ namespace look.sender.wpf.controls
         /// <param name="e">
         /// The e.
         /// </param>
-        private void LayoutRoot_Click(object sender, RoutedEventArgs e)
-        {
+        private void LayoutRoot_Click(object sender, RoutedEventArgs e) {
             this.Checked = !this.Checked;
             e.Handled = true;
         }
@@ -142,8 +140,7 @@ namespace look.sender.wpf.controls
         /// <param name="e">
         /// The e.
         /// </param>
-        private void UserControl_MouseUp(object sender, MouseButtonEventArgs e)
-        {
+        private void UserControl_MouseUp(object sender, MouseButtonEventArgs e) {
             this.Checked = !this.Checked;
             e.Handled = true;
         }
@@ -151,8 +148,7 @@ namespace look.sender.wpf.controls
         /// <summary>
         ///     The set background color.
         /// </summary>
-        private void setBackgroundColor()
-        {
+        private void setBackgroundColor() {
             var colors = new List<Color>();
             colors.Add((Color)ColorConverter.ConvertFromString("#FF00B2F0"));
             colors.Add((Color)ColorConverter.ConvertFromString("#FF297BCB"));
@@ -163,9 +159,11 @@ namespace look.sender.wpf.controls
             this.Background = brush;
 
             colorCounter++;
-            if (colorCounter == colors.Count) colorCounter = 0;
+            if (colorCounter == colors.Count)
+                colorCounter = 0;
         }
 
         #endregion
     }
+
 }

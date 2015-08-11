@@ -13,7 +13,10 @@ namespace look.sender.wpf.ViewModels
 
     using System;
     using System.Diagnostics;
+    using System.Linq;
     using System.Reactive.Disposables;
+    using System.Reactive.Linq;
+    using System.Windows.Threading;
 
     using look.sender.wpf.Interfaces;
     using look.sender.wpf.Models;
@@ -36,6 +39,16 @@ namespace look.sender.wpf.ViewModels
         private ReactiveList<Favorite> favorites;
 
         /// <summary>
+        /// The refresh timer.
+        /// </summary>
+        private DispatcherTimer refreshTimer;
+
+        /// <summary>
+        ///     The selected favorite.
+        /// </summary>
+        private Favorite selectedFavorite;
+
+        /// <summary>
         ///     The shareable windows.
         /// </summary>
         private ReactiveList<ShareableWindow> shareableWindows;
@@ -50,20 +63,11 @@ namespace look.sender.wpf.ViewModels
         /// <param name="screen">
         /// The screen.
         /// </param>
-        public HomeViewModel(IScreen screen)
-        {
+        public HomeViewModel(IScreen screen) {
             this.HostScreen = screen;
 
             // TODO: add DI
             this.WindowService = new WindowService();
-
-            this.ShareableWindows = new ReactiveList<ShareableWindow>(this.WindowService.GetShareableWindows());
-
-            this.Favorites = new ReactiveList<Favorite> {
-                new Favorite() { Name = "HAN07WST12345" }, 
-                new Favorite() { Name = "HAN07WST54321" }, 
-                new Favorite() { Name = "HAN07WST23321" }
-            };
 
             this.WhenNavigatedTo(this.InitViewModel);
         }
@@ -83,10 +87,17 @@ namespace look.sender.wpf.ViewModels
         public IScreen HostScreen { get; private set; }
 
         /// <summary>
+        ///     Gets or sets the selected favorite.
+        /// </summary>
+        public Favorite SelectedFavorite {
+            get { return this.selectedFavorite; }
+            set { this.RaiseAndSetIfChanged(ref this.selectedFavorite, value); }
+        }
+
+        /// <summary>
         ///     Gets or sets the shareable windows.
         /// </summary>
-        public ReactiveList<ShareableWindow> ShareableWindows
-        {
+        public ReactiveList<ShareableWindow> ShareableWindows {
             get { return this.shareableWindows; }
             set { this.RaiseAndSetIfChanged(ref this.shareableWindows, value); }
         }
@@ -115,19 +126,86 @@ namespace look.sender.wpf.ViewModels
         /// <returns>
         ///     The <see cref="IDisposable" />.
         /// </returns>
-        private IDisposable InitViewModel()
-        {
+        private IDisposable InitViewModel() {
+            this.ShareableWindows = new ReactiveList<ShareableWindow>() { ChangeTrackingEnabled = true };
+
+            // TODO: loading Favorites from file
+            this.Favorites = new ReactiveList<Favorite> {
+                new Favorite() { Name = "HAN07WST12345", IPAddress = "192.168.150.1" }, 
+                new Favorite() { Name = "HAN07WST54321", IPAddress = "192.168.150.10" }, 
+                new Favorite() { Name = "HAN07WST23321", IPAddress = "192.168.150.100" }
+            };
+            this.SelectedFavorite = this.Favorites[0];
+
+            // when selected favorite changes, set respective SharedWindows flags
+            this.WhenAny(x => x.SelectedFavorite, x => x.Value).Subscribe(
+                x => {
+                    foreach (var window in this.ShareableWindows)
+                        window.IsShared = window.Favorites.Contains(x);
+                });
+
+            // when a new window is shared, add currently selected favorite reference to SharedWindow instance
+            this.ShareableWindows.ItemChanged.Where(x => x.PropertyName == "IsShared" && x.Sender.IsShared).Select(x => x.Sender).Subscribe(
+                x => x.Favorites.Add(this.SelectedFavorite));
+
+            // when a window is no longer shared, remove favorite reference from SharedWindow instance
+            this.ShareableWindows.ItemChanged.Where(x => x.PropertyName == "IsShared" && !x.Sender.IsShared).Select(x => x.Sender).Subscribe(
+                x => x.Favorites.Remove(this.SelectedFavorite));
+
+            this.refreshTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 1) };
+            this.refreshTimer.Tick += this.refreshTimer_Tick;
+            this.refreshTimer.Start();
+
             return Disposable.Create(this.Shutdown);
+        }
+
+        /// <summary>
+        /// The refresh shareable windows.
+        /// </summary>
+        private void RefreshShareableWindows() {
+            // using (this.ShareableWindows.SuppressChangeNotifications()) {
+            Debug.WriteLine("Refreshing ------------- ");
+            var windows = this.WindowService.GetShareableWindows();
+            foreach (var w in windows.Where(ws => this.ShareableWindows.All(s => s.Handle != ws.Handle))) {
+                this.ShareableWindows.Add(w);
+                Debug.WriteLine("Added " + w.Title);
+            }
+
+            var listDelete = this.ShareableWindows.Where(ws => windows.All(w => w.Handle != ws.Handle)).ToList();
+            listDelete.ForEach(
+                ld => {
+                    this.ShareableWindows.Remove(ld);
+                    Debug.WriteLine("Removed " + ld.Title);
+                });
+            // }
         }
 
         /// <summary>
         ///     The shutdown.
         /// </summary>
-        private void Shutdown()
-        {
+        private void Shutdown() {
+            this.refreshTimer.Stop();
             Debug.WriteLine("Shutdown.");
+        }
+
+        /// <summary>
+        /// The refresh timer_ tick.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void refreshTimer_Tick(object sender, EventArgs e) {
+            this.refreshTimer.Stop();
+
+            this.RefreshShareableWindows();
+
+            this.refreshTimer.Start();
         }
 
         #endregion
     }
+
 }

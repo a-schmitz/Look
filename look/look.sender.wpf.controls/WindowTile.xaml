@@ -8,6 +8,10 @@
 	x:Name="UserControl"
 	d:DesignWidth="640" d:DesignHeight="480" MouseUp="UserControl_MouseUp">
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
     <Button x:Name="LayoutRoot" Click="LayoutRoot_Click"  >
 
         <Button.Template>
@@ -25,7 +29,20 @@
                     </Grid.RowDefinitions>
 
                     <Image Grid.Row="1" Grid.Column="2" VerticalAlignment="Bottom"  Source="{Binding Path=ApplicationImage}" Width="24" Height="24" Margin="0,0,3,10" />
-                    <CheckBox Content="" Grid.Row="0" Grid.Column="2" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding Checked, Mode=TwoWay}" Height="Auto" Margin="0,5,0,0" ClickMode="Press" Click="CheckBox_Click"/>
+
+                    <ToggleButton Width="32" Grid.Row="0" Grid.Column="2"
+                              Height="32" IsChecked="{Binding Checked, Mode=TwoWay}"
+                              Style="{StaticResource WindowTileCheckboxStyle}">
+                        <Rectangle Width="16"
+                                   Visibility="{Binding Path=Checked, Converter={StaticResource BoolToVis}}"
+                               Height="16"
+                               Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Stretch="Fill"
+                                         Visual="{DynamicResource appbar_check}" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </ToggleButton>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="10" TextAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=ApplicationName}" Foreground="Gainsboro" Margin="10,0,0,0"></TextBlock>
                     <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontSize="14" TextAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=WindowTitle}" Margin="10,0,0,0"></TextBlock>
