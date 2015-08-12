@@ -7,7 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace look.sender.wpf.Interfaces {
+namespace look.sender.wpf.Interfaces
+{
     #region
 
     using look.sender.wpf.Models;
@@ -19,7 +20,8 @@ namespace look.sender.wpf.Interfaces {
     /// <summary>
     ///     The WelcomeViewModel interface.
     /// </summary>
-    public interface IHomeViewModel : IRoutableViewModel {
+    public interface IHomeViewModel : IRoutableViewModel
+    {
         #region Public Properties
 
         /// <summary>

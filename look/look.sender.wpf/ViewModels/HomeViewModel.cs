@@ -39,7 +39,7 @@ namespace look.sender.wpf.ViewModels
         private ReactiveList<Favorite> favorites;
 
         /// <summary>
-        /// The refresh timer.
+        ///     The refresh timer.
         /// </summary>
         private DispatcherTimer refreshTimer;
 
@@ -63,7 +63,8 @@ namespace look.sender.wpf.ViewModels
         /// <param name="screen">
         /// The screen.
         /// </param>
-        public HomeViewModel(IScreen screen) {
+        public HomeViewModel(IScreen screen)
+        {
             this.HostScreen = screen;
 
             // TODO: add DI
@@ -79,7 +80,18 @@ namespace look.sender.wpf.ViewModels
         /// <summary>
         ///     Gets or sets the favorites.
         /// </summary>
-        public ReactiveList<Favorite> Favorites { get { return this.favorites; } set { this.RaiseAndSetIfChanged(ref this.favorites, value); } }
+        public ReactiveList<Favorite> Favorites
+        {
+            get
+            {
+                return this.favorites;
+            }
+
+            set
+            {
+                this.RaiseAndSetIfChanged(ref this.favorites, value);
+            }
+        }
 
         /// <summary>
         ///     Gets the host screen.
@@ -89,23 +101,45 @@ namespace look.sender.wpf.ViewModels
         /// <summary>
         ///     Gets or sets the selected favorite.
         /// </summary>
-        public Favorite SelectedFavorite {
-            get { return this.selectedFavorite; }
-            set { this.RaiseAndSetIfChanged(ref this.selectedFavorite, value); }
+        public Favorite SelectedFavorite
+        {
+            get
+            {
+                return this.selectedFavorite;
+            }
+
+            set
+            {
+                this.RaiseAndSetIfChanged(ref this.selectedFavorite, value);
+            }
         }
 
         /// <summary>
         ///     Gets or sets the shareable windows.
         /// </summary>
-        public ReactiveList<ShareableWindow> ShareableWindows {
-            get { return this.shareableWindows; }
-            set { this.RaiseAndSetIfChanged(ref this.shareableWindows, value); }
+        public ReactiveList<ShareableWindow> ShareableWindows
+        {
+            get
+            {
+                return this.shareableWindows;
+            }
+
+            set
+            {
+                this.RaiseAndSetIfChanged(ref this.shareableWindows, value);
+            }
         }
 
         /// <summary>
         ///     Gets the url path segment.
         /// </summary>
-        public string UrlPathSegment { get { return "home"; } }
+        public string UrlPathSegment
+        {
+            get
+            {
+                return "home";
+            }
+        }
 
         #endregion
 
@@ -126,64 +160,115 @@ namespace look.sender.wpf.ViewModels
         /// <returns>
         ///     The <see cref="IDisposable" />.
         /// </returns>
-        private IDisposable InitViewModel() {
+        private IDisposable InitViewModel()
+        {
             this.ShareableWindows = new ReactiveList<ShareableWindow>() { ChangeTrackingEnabled = true };
 
             // TODO: loading Favorites from file
-            this.Favorites = new ReactiveList<Favorite> {
-                new Favorite() { Name = "HAN07WST12345", IPAddress = "192.168.150.1" }, 
-                new Favorite() { Name = "HAN07WST54321", IPAddress = "192.168.150.10" }, 
-                new Favorite() { Name = "HAN07WST23321", IPAddress = "192.168.150.100" }
-            };
-            this.SelectedFavorite = this.Favorites[0];
+            this.Favorites = new ReactiveList<Favorite>
+                                 {
+                                     new Favorite()
+                                         {
+                                             Name = "HAN07WST12345", 
+                                             IpAddress = "192.168.150.1"
+                                         }, 
+                                     new Favorite()
+                                         {
+                                             Name = "HAN07WST54321", 
+                                             IpAddress = "192.168.150.10"
+                                         }, 
+                                     new Favorite()
+                                         {
+                                             Name = "HAN07WST23321", 
+                                             IpAddress = "192.168.150.100"
+                                         }
+                                 };
+
+            foreach (var f in this.Favorites)
+            {
+                f.Tabs.Add(
+                    new SharedWindowsViewModel(this.HostScreen, this.Favorites[0], this.ShareableWindows, "Shared"));
+            }
+
+            this.Favorites[0].Tabs.Add(new RemoteViewerViewModel(this.HostScreen, this.Favorites[0], "Test1"));
+            this.Favorites[0].Tabs.Add(new RemoteViewerViewModel(this.HostScreen, this.Favorites[0], "Test2"));
 
             // when selected favorite changes, set respective SharedWindows flags
             this.WhenAny(x => x.SelectedFavorite, x => x.Value).Subscribe(
-                x => {
-                    foreach (var window in this.ShareableWindows)
-                        window.IsShared = window.Favorites.Contains(x);
-                });
+                x =>
+                    {
+                        if (x!=null )
+                            Debug.WriteLine("Favorite Selected Favorite" + x.Name);
 
-            // when a new window is shared, add currently selected favorite reference to SharedWindow instance
-            this.ShareableWindows.ItemChanged.Where(x => x.PropertyName == "IsShared" && x.Sender.IsShared).Select(x => x.Sender).Subscribe(
-                x => x.Favorites.Add(this.SelectedFavorite));
+                        foreach (var window in this.ShareableWindows)
+                        {
+                            if (x.SharedWindows.Contains(window))
+                                window.IsShared = true;
+                        }
+                    });
 
-            // when a window is no longer shared, remove favorite reference from SharedWindow instance
-            this.ShareableWindows.ItemChanged.Where(x => x.PropertyName == "IsShared" && !x.Sender.IsShared).Select(x => x.Sender).Subscribe(
-                x => x.Favorites.Remove(this.SelectedFavorite));
+            // when a new window is shared, add SharedWindow instance to currently selected favorite
+            this.ShareableWindows.ItemChanged.Where(x => x.PropertyName == "IsShared")
+                .Select(x => x.Sender)
+                .Subscribe(
+                    x =>
+                        {
+                            Debug.WriteLine("Favorite ItemChanged" + this.selectedFavorite.Name);
+                            if (x.IsShared && !this.SelectedFavorite.SharedWindows.Contains(x))
+                            {
+                                this.SelectedFavorite.SharedWindows.Add(x);
+                                Debug.WriteLine(string.Format("Added {0}; Count={1}", x.Title, SelectedFavorite.SharedWindows.Count));
+                            }
+                            else
+                            {
+                                this.SelectedFavorite.SharedWindows.Remove(x);
+                                Debug.WriteLine(string.Format("Removed {0}; Count={1}", x.Title, SelectedFavorite.SharedWindows.Count));
+                            }
 
+                        });
+
+            // start refresh timer for collecting shareable windows
             this.refreshTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 1) };
             this.refreshTimer.Tick += this.refreshTimer_Tick;
             this.refreshTimer.Start();
+
+            // select first host and select first tab
+            this.SelectedFavorite = this.Favorites[0];
+            this.SelectedFavorite.SelectedViewModel = this.SelectedFavorite.Tabs[0];
 
             return Disposable.Create(this.Shutdown);
         }
 
         /// <summary>
-        /// The refresh shareable windows.
+        ///     The refresh shareable windows.
         /// </summary>
-        private void RefreshShareableWindows() {
+        private void RefreshShareableWindows()
+        {
             // using (this.ShareableWindows.SuppressChangeNotifications()) {
-            Debug.WriteLine("Refreshing ------------- ");
+            //Debug.WriteLine("Refreshing ------------- ");
             var windows = this.WindowService.GetShareableWindows();
-            foreach (var w in windows.Where(ws => this.ShareableWindows.All(s => s.Handle != ws.Handle))) {
+            foreach (var w in windows.Where(ws => this.ShareableWindows.All(s => s.Handle != ws.Handle)))
+            {
                 this.ShareableWindows.Add(w);
                 Debug.WriteLine("Added " + w.Title);
             }
 
             var listDelete = this.ShareableWindows.Where(ws => windows.All(w => w.Handle != ws.Handle)).ToList();
             listDelete.ForEach(
-                ld => {
-                    this.ShareableWindows.Remove(ld);
-                    Debug.WriteLine("Removed " + ld.Title);
-                });
+                ld =>
+                    {
+                        this.ShareableWindows.Remove(ld);
+                        Debug.WriteLine("Removed " + ld.Title);
+                    });
+
             // }
         }
 
         /// <summary>
         ///     The shutdown.
         /// </summary>
-        private void Shutdown() {
+        private void Shutdown()
+        {
             this.refreshTimer.Stop();
             Debug.WriteLine("Shutdown.");
         }
@@ -197,7 +282,8 @@ namespace look.sender.wpf.ViewModels
         /// <param name="e">
         /// The e.
         /// </param>
-        private void refreshTimer_Tick(object sender, EventArgs e) {
+        private void refreshTimer_Tick(object sender, EventArgs e)
+        {
             this.refreshTimer.Stop();
 
             this.RefreshShareableWindows();
@@ -207,5 +293,4 @@ namespace look.sender.wpf.ViewModels
 
         #endregion
     }
-
 }
