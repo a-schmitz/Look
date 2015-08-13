@@ -70,6 +70,7 @@
     <Compile Include="FavoriteItem.xaml.cs">
       <DependentUpon>FavoriteItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helper\OverlayAdorner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -82,6 +83,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="BadgeControl.xaml.cs">
+      <DependentUpon>BadgeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="WindowTile.xaml.cs">
       <DependentUpon>WindowTile.xaml</DependentUpon>
@@ -98,6 +102,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="FavoriteItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BadgeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

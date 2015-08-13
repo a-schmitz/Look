@@ -18,6 +18,9 @@ namespace look.sender.wpf.Models
     /// </summary>
     public class Favorite
     {
+
+        private ITabViewModel selectedViewModel;
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -51,7 +54,14 @@ namespace look.sender.wpf.Models
         /// <summary>
         ///     Gets or sets the selected view model.
         /// </summary>
-        public ITabViewModel SelectedViewModel { get; set; }
+        public ITabViewModel SelectedViewModel {
+            get {
+                if (this.selectedViewModel == null && this.Tabs.Count > 0)
+                    return this.Tabs[0];
+                return this.selectedViewModel;
+            } 
+            set { this.selectedViewModel = value; }
+        }
 
         /// <summary>
         /// Gets or sets the shared windows.

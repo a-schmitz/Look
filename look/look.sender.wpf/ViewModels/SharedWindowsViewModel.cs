@@ -9,10 +9,19 @@
 
 namespace look.sender.wpf.ViewModels
 {
+    #region
+
+    using System;
+    using System.Linq;
+    using System.Reactive.Linq;
+    using System.Windows;
+
     using look.sender.wpf.Interfaces;
     using look.sender.wpf.Models;
 
     using ReactiveUI;
+
+    #endregion
 
     /// <summary>
     ///     The shared windows view model.
@@ -22,12 +31,12 @@ namespace look.sender.wpf.ViewModels
         #region Fields
 
         /// <summary>
-        /// The header.
+        ///     The header.
         /// </summary>
         private string header;
 
         /// <summary>
-        /// The shareable windows.
+        ///     The shareable windows.
         /// </summary>
         private ReactiveList<ShareableWindow> shareableWindows;
 
@@ -51,16 +60,15 @@ namespace look.sender.wpf.ViewModels
         /// <param name="header">
         /// The header.
         /// </param>
-        public SharedWindowsViewModel(
-            IScreen screen, 
-            Favorite favorite, 
-            ReactiveList<ShareableWindow> shareableWindows, 
-            string header)
-        {
+        public SharedWindowsViewModel(IScreen screen, Favorite favorite, ReactiveList<ShareableWindow> shareableWindows, string header) {
             this.HostScreen = screen;
             this.Favorite = favorite;
             this.ShareableWindows = shareableWindows;
             this.Header = header;
+
+            this.ShareableWindows.ItemChanged.Where(x => x.PropertyName == "IsShared").Select(x => x.Sender).Subscribe(
+                x => {this.RaisePropertyChanged("Header"); });
+
         }
 
         #endregion
@@ -75,17 +83,9 @@ namespace look.sender.wpf.ViewModels
         /// <summary>
         ///     Gets or sets the header.
         /// </summary>
-        public string Header
-        {
-            get
-            {
-                return this.header;
-            }
-
-            set
-            {
-                this.RaiseAndSetIfChanged(ref this.header, value);
-            }
+        public string Header {
+            get { return string.Format("{0} ({1})", this.header, this.ShareableWindows.Where(s => s.IsShared).Count()); }
+            set { this.RaiseAndSetIfChanged(ref this.header, value); }
         }
 
         /// <summary>
@@ -96,30 +96,17 @@ namespace look.sender.wpf.ViewModels
         /// <summary>
         ///     Gets or sets the shareable windows.
         /// </summary>
-        public ReactiveList<ShareableWindow> ShareableWindows
-        {
-            get
-            {
-                return this.shareableWindows;
-            }
-
-            set
-            {
-                this.RaiseAndSetIfChanged(ref this.shareableWindows, value);
-            }
+        public ReactiveList<ShareableWindow> ShareableWindows {
+            get { return this.shareableWindows; }
+            set { this.RaiseAndSetIfChanged(ref this.shareableWindows, value); }
         }
 
         /// <summary>
-        /// Gets the url path segment.
+        ///     Gets the url path segment.
         /// </summary>
-        public string UrlPathSegment
-        {
-            get
-            {
-                return "sharedwindows";
-            }
-        }
+        public string UrlPathSegment { get { return "sharedwindows"; } }
 
         #endregion
     }
+
 }
