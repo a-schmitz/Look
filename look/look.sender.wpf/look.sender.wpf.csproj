@@ -91,13 +91,24 @@
     </ApplicationDefinition>
     <Compile Include="Interfaces\IHomeViewModel.cs" />
     <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="Interfaces\ITabViewModel.cs" />
     <Compile Include="Models\ShareableWindow.cs" />
     <Compile Include="Interfaces\IWindowService.cs" />
     <Compile Include="Services\WindowService.cs" />
     <Compile Include="Models\Favorite.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
+    <Compile Include="Interfaces\IRemoteViewerViewModel.cs" />
+    <Compile Include="Interfaces\ISharedWindowsViewModel.cs" />
+    <Compile Include="ViewModels\RemoteViewerViewModel.cs" />
+    <Compile Include="ViewModels\SharedWindowsViewModel.cs" />
     <Compile Include="Views\HomeView.xaml.cs">
       <DependentUpon>HomeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RemoteViewerView.xaml.cs">
+      <DependentUpon>RemoteViewerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SharedWindowsView.xaml.cs">
+      <DependentUpon>SharedWindowsView.xaml</DependentUpon>
     </Compile>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -120,6 +131,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\HomeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RemoteViewerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SharedWindowsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

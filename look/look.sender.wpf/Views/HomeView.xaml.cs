@@ -15,6 +15,7 @@ namespace look.sender.wpf.Views
     using System.Windows.Controls;
 
     using look.sender.wpf.Interfaces;
+    using look.sender.wpf.ViewModels;
 
     using MahApps.Metro.Controls;
 
@@ -36,6 +37,8 @@ namespace look.sender.wpf.Views
             "ViewModel", typeof(IHomeViewModel), typeof(HomeView), new PropertyMetadata(null));
 
         #endregion
+
+        
 
         #region Constructors and Destructors
 

@@ -7,7 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace look.sender.wpf.Interfaces {
+namespace look.sender.wpf.Interfaces
+{
     #region
 
     using System.Collections.Generic;
@@ -19,7 +20,8 @@ namespace look.sender.wpf.Interfaces {
     /// <summary>
     ///     The WindowService interface.
     /// </summary>
-    public interface IWindowService {
+    public interface IWindowService
+    {
         #region Public Methods and Operators
 
         /// <summary>
@@ -32,5 +34,4 @@ namespace look.sender.wpf.Interfaces {
 
         #endregion
     }
-
 }

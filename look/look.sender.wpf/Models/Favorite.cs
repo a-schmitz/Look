@@ -7,12 +7,30 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace look.sender.wpf.Models {
+namespace look.sender.wpf.Models
+{
+    using look.sender.wpf.Interfaces;
+
+    using ReactiveUI;
 
     /// <summary>
     ///     The favorite.
     /// </summary>
-    public class Favorite {
+    public class Favorite
+    {
+        #region Constructors and Destructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Favorite" /> class.
+        /// </summary>
+        public Favorite()
+        {
+            this.Tabs = new ReactiveList<ITabViewModel>();
+            this.SharedWindows = new ReactiveList<ShareableWindow>();
+        }
+
+        #endregion
+
         #region Public Properties
 
         /// <summary>
@@ -23,14 +41,28 @@ namespace look.sender.wpf.Models {
         /// <summary>
         ///     Gets or sets the ip address.
         /// </summary>
-        public string IPAddress { get; set; }
+        public string IpAddress { get; set; }
 
         /// <summary>
         ///     Gets or sets the name.
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the selected view model.
+        /// </summary>
+        public ITabViewModel SelectedViewModel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the shared windows.
+        /// </summary>
+        public ReactiveList<ShareableWindow> SharedWindows { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the tabs.
+        /// </summary>
+        public ReactiveList<ITabViewModel> Tabs { get; set; }
+
         #endregion
     }
-
 }
