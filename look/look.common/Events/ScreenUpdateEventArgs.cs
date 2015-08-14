@@ -5,7 +5,7 @@
 
     public class ScreenUpdateEventArgs : EventArgs
     {
-        public string Host { get; set; }
+        public string Ip { get; set; }
         public string WindowId { get; set; }
         public Image Screen { get; set; }
     }

@@ -1,49 +1,51 @@
-﻿namespace look.communication
+﻿namespace look.capture
 {
+
     using System;
     using System.Drawing;
     using System.ServiceModel;
     using System.Threading;
 
+    using look.capture.Helper;
+    using look.communication;
     using look.communication.Clients;
-    using look.communication.Helper;
     using look.communication.Helper.Command;
-    using look.communication.Services;
     using look.utils;
 
     public class RemoteSharer : IDisposable
     {
         private static readonly ScreenCapture capture = new ScreenCapture();
-        private ViewServiceClient proxy;
+        private readonly ViewServiceClient proxy;
         private Thread threadCursor;
         private Thread threadScreen;
         private bool running;
         private int _numByteFullScreen = 1;
 
-        public RemoteSharer(EndpointAddress address)
+        private string host;
+
+        public RemoteSharer(string host)
         {
-            var ctx = new InstanceContext(new ViewService());
-            proxy = new ViewServiceClient(ctx, address);
+            this.proxy = RemoteContext.Instance.GetProxy(host);
         }
 
         public void Start()
         {
-            running = true;
+            this.running = true;
 
-            threadScreen = new Thread(ScreenThread);
-            threadScreen.Start();
+            this.threadScreen = new Thread(this.ScreenThread);
+            this.threadScreen.Start();
 
-            threadCursor = new Thread(CursorThread);
-            threadCursor.Start();
+            this.threadCursor = new Thread(this.CursorThread);
+            this.threadCursor.Start();
         }
 
         public void Stop()
         {
-            if (proxy.State == CommunicationState.Opened)
-                proxy.Abort();
-            running = false;
-            threadCursor.Join();
-            threadScreen.Join();
+            if (this.proxy.State == CommunicationState.Opened)
+                this.proxy.Abort();
+            this.running = false;
+            this.threadCursor.Join();
+            this.threadScreen.Join();
         }
 
 
@@ -52,16 +54,16 @@
             Rectangle bounds = Rectangle.Empty;
 
             // Run until we are asked to stop.
-            while (running)
+            while (this.running)
             {
                 try
                 {
                     // Capture a bitmap of the changed pixels.
                     Bitmap image = capture.Screen(ref bounds);
-                    if (_numByteFullScreen == 1)
+                    if (this._numByteFullScreen == 1)
                     {
                         // Initialize the screen size (used for performance metrics)
-                        _numByteFullScreen = bounds.Width * bounds.Height * 4;
+                        this._numByteFullScreen = bounds.Width * bounds.Height * 4;
                     }
 
                     if (bounds != Rectangle.Empty && image != null)
@@ -71,12 +73,12 @@
                         if (data != null)
                         {
                             // Thread safety on the proxy.
-                            lock (proxy)
+                            lock (this.proxy)
                             {
                                 try
                                 {
                                     // Push the data.
-                                    proxy.PushScreenUpdate(data);
+                                    this.proxy.PushScreenUpdate(data);
                                 }
                                 catch (Exception ex)
                                 {
@@ -108,7 +110,7 @@
         private void CursorThread()
         {
             // Run until we are asked to stop.
-            while (running)
+            while (this.running)
             {
                 try
                 {
@@ -125,7 +127,7 @@
                             try
                             {
                                 // Push the data.
-                                var commandStack = proxy.PushCursorUpdate(data);
+                                var commandStack = this.proxy.PushCursorUpdate(data);
 
                                 // Process command stack
                                 ProcessCommands(commandStack);

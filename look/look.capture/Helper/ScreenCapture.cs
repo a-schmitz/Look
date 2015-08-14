@@ -1,5 +1,6 @@
-﻿namespace look.communication.Helper
+﻿namespace look.capture.Helper
 {
+
     using System;
     using System.Drawing;
     using System.Drawing.Imaging;
@@ -15,7 +16,7 @@
         public ScreenCapture()
         {
             var junk = new Bitmap(10, 10);
-            _graphics = Graphics.FromImage(junk);
+            this._graphics = Graphics.FromImage(junk);
         }
 
         /// <summary>
@@ -31,41 +32,41 @@
 
             // Capture a new screenshot.
             //
-            lock (_newBitmap)
+            lock (this._newBitmap)
             {
-                _newBitmap = Capture.CaptureDesktop();
+                this._newBitmap = Capture.CaptureDesktop();
 
                 // If we have a previous screenshot, only send back
                 //	a subset that is the minimum rectangular area
                 //	that encompasses all the changed pixels.
                 //
-                if (_prevBitmap != null)
+                if (this._prevBitmap != null)
                 {
                     // Get the bounding box.
                     //
-                    bounds = GetBoundingBoxForChanges();
+                    bounds = this.GetBoundingBoxForChanges();
                     if (bounds == Rectangle.Empty)
                     {
                         // Nothing has changed.
                         //
-                        PercentOfImage = 0.0;
+                        this.PercentOfImage = 0.0;
                     }
                     else
                     {
                         // Get the minimum rectangular area
                         //
                         diff = new Bitmap(bounds.Width, bounds.Height);
-                        _graphics = Graphics.FromImage(diff);
-                        _graphics.DrawImage(_newBitmap, 0, 0, bounds, GraphicsUnit.Pixel);
+                        this._graphics = Graphics.FromImage(diff);
+                        this._graphics.DrawImage(this._newBitmap, 0, 0, bounds, GraphicsUnit.Pixel);
 
                         // Set the current bitmap as the previous to prepare
                         //	for the next screen capture.
                         //
-                        _prevBitmap = _newBitmap;
+                        this._prevBitmap = this._newBitmap;
 
-                        lock (_newBitmap)
+                        lock (this._newBitmap)
                         {
-                            PercentOfImage = 100.0 * (diff.Height * diff.Width) / (_newBitmap.Height * _newBitmap.Width);
+                            this.PercentOfImage = 100.0 * (diff.Height * diff.Width) / (this._newBitmap.Height * this._newBitmap.Width);
                         }
                     }
                 }
@@ -77,14 +78,14 @@
                     // Set the previous bitmap to the current to prepare
                     //	for the next screen capture.
                     //
-                    _prevBitmap = _newBitmap;
-                    diff = _newBitmap;
+                    this._prevBitmap = this._newBitmap;
+                    diff = this._newBitmap;
 
                     // Create a bounding rectangle.
                     //
-                    bounds = new Rectangle(0, 0, _newBitmap.Width, _newBitmap.Height);
+                    bounds = new Rectangle(0, 0, this._newBitmap.Width, this._newBitmap.Height);
 
-                    PercentOfImage = 100.0;
+                    this.PercentOfImage = 100.0;
                 }
             }
             return diff;
@@ -100,12 +101,12 @@
         {
             int screenWidth = 1;
             int screenHeight = 1;
-            lock (_newBitmap)
+            lock (this._newBitmap)
             {
                 try
                 {
-                    screenWidth = _newBitmap.Width;
-                    screenHeight = _newBitmap.Height;
+                    screenWidth = this._newBitmap.Width;
+                    screenHeight = this._newBitmap.Height;
                 }
                 catch (Exception)
                 {
@@ -170,8 +171,8 @@
         /// </summary>
         public void Reset()
         {
-            _prevBitmap = null;
-            _newBitmap = new Bitmap(1, 1);
+            this._prevBitmap = null;
+            this._newBitmap = new Bitmap(1, 1);
         }
 
 
@@ -201,9 +202,9 @@
 
             // Validate the images are the same shape and type.
             //
-            if (_prevBitmap.Width != _newBitmap.Width ||
-                _prevBitmap.Height != _newBitmap.Height ||
-                _prevBitmap.PixelFormat != _newBitmap.PixelFormat)
+            if (this._prevBitmap.Width != this._newBitmap.Width ||
+                this._prevBitmap.Height != this._newBitmap.Height ||
+                this._prevBitmap.PixelFormat != this._newBitmap.PixelFormat)
             {
                 // Not the same shape...can't do the search.
                 //
@@ -212,8 +213,8 @@
 
             // Init the search parameters.
             //
-            int width = _newBitmap.Width;
-            int height = _newBitmap.Height;
+            int width = this._newBitmap.Width;
+            int height = this._newBitmap.Height;
             int left = width;
             int right = 0;
             int top = height;
@@ -225,12 +226,12 @@
             {
                 // Lock the bits into memory.
                 //
-                bmNewData = _newBitmap.LockBits(
-                    new Rectangle(0, 0, _newBitmap.Width, _newBitmap.Height),
-                    ImageLockMode.ReadOnly, _newBitmap.PixelFormat);
-                bmPrevData = _prevBitmap.LockBits(
-                    new Rectangle(0, 0, _prevBitmap.Width, _prevBitmap.Height),
-                    ImageLockMode.ReadOnly, _prevBitmap.PixelFormat);
+                bmNewData = this._newBitmap.LockBits(
+                    new Rectangle(0, 0, this._newBitmap.Width, this._newBitmap.Height),
+                    ImageLockMode.ReadOnly, this._newBitmap.PixelFormat);
+                bmPrevData = this._prevBitmap.LockBits(
+                    new Rectangle(0, 0, this._prevBitmap.Width, this._prevBitmap.Height),
+                    ImageLockMode.ReadOnly, this._prevBitmap.PixelFormat);
 
                 // The images are ARGB (4 bytes)
                 //
@@ -270,7 +271,7 @@
                     //
                     // For all rows of pixels (top to bottom)
                     //
-                    for (int y = 0; y < _newBitmap.Height; ++y)
+                    for (int y = 0; y < this._newBitmap.Height; ++y)
                     {
                         // For pixels up to the current bound (left to right)
                         //
@@ -328,16 +329,16 @@
                         //
                         pNew = (int*)(void*)scanNew0;
                         pPrev = (int*)(void*)scanPrev0;
-                        pNew += (_newBitmap.Height - 1) * strideNew;
-                        pPrev += (_prevBitmap.Height - 1) * stridePrev;
+                        pNew += (this._newBitmap.Height - 1) * strideNew;
+                        pPrev += (this._prevBitmap.Height - 1) * stridePrev;
 
                         // For each row (bottom to top)
                         //
-                        for (int y = _newBitmap.Height - 1; y > top; y--)
+                        for (int y = this._newBitmap.Height - 1; y > top; y--)
                         {
                             // For each column (right to left)
                             //
-                            for (int x = _newBitmap.Width - 1; x > right; x--)
+                            for (int x = this._newBitmap.Width - 1; x > right; x--)
                             {
                                 // Use pointer arithmetic to index the
                                 //	next pixel in this row.
@@ -375,11 +376,11 @@
                 //
                 if (bmNewData != null)
                 {
-                    _newBitmap.UnlockBits(bmNewData);
+                    this._newBitmap.UnlockBits(bmNewData);
                 }
                 if (bmPrevData != null)
                 {
-                    _prevBitmap.UnlockBits(bmPrevData);
+                    this._prevBitmap.UnlockBits(bmPrevData);
                 }
             }
 

@@ -5,17 +5,18 @@
     using System.ServiceModel;
     using System.ServiceModel.Discovery;
 
+    using look.common.Model;
     using look.communication.Contracts;
     using look.communication.Hosts;
     using look.communication.Model;
 
-    public class ViewServiceClient : DiscoveryDuplexBaseClient<IViewService>
+    public class ViewServiceClient : DiscoveryBaseClient<IViewService>
     {
         public ViewServiceClient()
         {
         }
 
-        public ViewServiceClient(InstanceContext callbackInstance, EndpointAddress endpointAddress) : base(callbackInstance)
+        public ViewServiceClient(EndpointAddress endpointAddress)
         {
             Endpoint.Address = endpointAddress;
         }

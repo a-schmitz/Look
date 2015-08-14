@@ -11,6 +11,6 @@
         public int CursorX;
         public int CursorY;
         public Image Display;
-        public string Host;
+        public string Ip;
     }
 }

@@ -3,9 +3,10 @@
     using System.Collections.Generic;
     using System.ServiceModel;
 
+    using look.common.Model;
     using look.communication.Model;
 
-    [ServiceContract(CallbackContract = typeof(IViewService))]
+    [ServiceContract]
     public interface IViewService
     {
         #region bi-drectional

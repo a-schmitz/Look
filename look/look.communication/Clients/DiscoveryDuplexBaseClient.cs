@@ -9,21 +9,8 @@
 
     using look.communication.Model;
 
-    public abstract class DiscoveryDuplexBaseClient<T> : DuplexClientBase<T> where T : class
+    public abstract class DiscoveryBaseClient<T> : ClientBase<T> where T : class
     {
-        #region constructor
-
-        protected DiscoveryDuplexBaseClient() : base(new InstanceContext(new object()))
-        {
-        }
-
-        protected DiscoveryDuplexBaseClient(InstanceContext callbackInstance)
-            : base(callbackInstance)
-        {
-        }
-
-        #endregion
-
         #region public functions
 
         public IEnumerable<SharingEndpoint> Discover(IEnumerable<string> scopes = null)
