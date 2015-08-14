@@ -1,11 +1,10 @@
 ﻿namespace look.communication.Hosts
 {
     using System;
-    using System.Net;
-    using System.Net.NetworkInformation;
     using System.ServiceModel;
     using System.ServiceModel.Discovery;
 
+    using look.common.Helper;
     using look.communication.Contracts;
 
     public class ViewServiceHost
@@ -74,16 +73,7 @@
 
         private void SetBaseAddress()
         {
-
-            var domainName = IPGlobalProperties.GetIPGlobalProperties().DomainName;
-            var hostName = Dns.GetHostName();
-
-            if (!hostName.EndsWith(domainName))
-            {
-                hostName += "." + domainName;
-            }
-
-            this.baseAddress = new Uri(string.Format(BASE_ADDRESS, hostName, PORT));
+            this.baseAddress = new Uri(string.Format(BASE_ADDRESS, IpHelper.GetLocalIp(), PORT));
         }
 
         #endregion

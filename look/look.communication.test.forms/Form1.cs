@@ -39,7 +39,7 @@
 
         private void InstanceOnOnHostConnected(object sender, HostConnectedEventArgs e) {
             var result = MessageBox.Show(
-                string.Format("Confirm? ({0})", e.Host),
+                string.Format("Confirm? ({0})", e.Ip),
                 "Connection Request",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
@@ -57,9 +57,18 @@
 
         private void ThreadConnect()
         {
-            var success = RemoteContext.Instance.Connect(endpoint);
-            if (success) {
-                share = new RemoteSharer(endpoint.Address.Uri.Host);
+            //var success = RemoteContext.Instance.Connect(endpoint);
+            //if (success)
+            //{
+            //    share = new RemoteSharer(endpoint.Address.Uri.Host);
+            //    share.Start();
+            //}
+
+            //var success = RemoteContext.Instance.Connect("127.0.0.1");
+            var success = RemoteContext.Instance.Connect("DUS30LAP2C01099");
+            if (success)
+            {
+                share = new RemoteSharer("127.0.0.1");
                 share.Start();
             }
         }

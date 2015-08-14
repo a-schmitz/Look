@@ -16,20 +16,20 @@
     public class ViewService : IViewService
     {
 
-        private string GetHost() {
+        private string GetIp() {
             try {
-                return Dns.GetHostEntry((OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name] as RemoteEndpointMessageProperty).Address).HostName;
+                return (OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name] as RemoteEndpointMessageProperty).Address;
             } catch {
                 return null;
             }
         }
 
         public bool Connect() {
-            var host = this.GetHost();
-            if (string.IsNullOrEmpty(host))
+            var ip = this.GetIp();
+            if (string.IsNullOrEmpty(ip))
                 return false;
 
-            var e = new HostConnectedEventArgs { Host = host };
+            var e = new HostConnectedEventArgs { Ip = ip };
             this.RaiseOnHostConnected(e);
 
             return e.Accepted;
@@ -58,7 +58,7 @@
             ViewSession viewSession;
             if (!_sessions.ContainsKey(id))
             {
-                viewSession = new ViewSession { Id = id };
+                viewSession = new ViewSession { Id = id, Ip = this.GetIp() };
                 _sessions[id] = viewSession;
             }
             else
@@ -83,7 +83,7 @@
                 ViewSession viewSession;
                 if (!_sessions.ContainsKey(id))
                 {
-                    viewSession = new ViewSession { Id = id };
+                    viewSession = new ViewSession { Id = id, Ip = this.GetIp() };
                     _sessions[id] = viewSession;
                 }
                 else
@@ -110,7 +110,7 @@
         public delegate void HostConnectedHandler(object sender, HostConnectedEventArgs e);
         public static event HostConnectedHandler OnHostConnected;
 
-        public delegate void ImageChangeHandler(Image display, string id, string host);
+        public delegate void ImageChangeHandler(Image display, string id, string ip);
         public static event ImageChangeHandler OnImageChange;
 
         #endregion
@@ -141,7 +141,7 @@
 
             if (OnImageChange != null)
             {
-                OnImageChange(viewSession.Display, viewSession.Id.ToString(), viewSession.Host);
+                OnImageChange(viewSession.Display, viewSession.Id.ToString(), viewSession.Ip);
             }
         }
 

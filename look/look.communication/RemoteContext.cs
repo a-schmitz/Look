@@ -10,6 +10,7 @@
 
     using look.common.Events;
     using look.common.Exceptions;
+    using look.common.Helper;
     using look.communication.Clients;
     using look.communication.Hosts;
     using look.communication.Model;
@@ -84,9 +85,9 @@
         private void ViewServiceOnOnHostConnected(object sender, HostConnectedEventArgs e) {
             this.RaiseOnHostConnected(e);
             if (e.Accepted) {
-                var address = new EndpointAddress(string.Format(ViewServiceHost.BASE_ADDRESS, e.Host, ViewServiceHost.PORT));
+                var address = new EndpointAddress(string.Format(ViewServiceHost.BASE_ADDRESS, e.Ip, ViewServiceHost.PORT));
                 var proxy = new ViewServiceClient(address);
-                this.connectedHosts.TryAdd(e.Host.ToLower(), proxy);
+                this.connectedHosts.TryAdd(e.Ip, proxy);
             }
         }
 
@@ -108,28 +109,22 @@
             using (var client = new ViewServiceClient()) {
                 foreach (var endpoint in client.Discover()) {
 #if !DEBUG
-                    if (!this.IsLocal(endpoint.Address)) // enable local testing
+                    if (!endpoint.Address.IsLoopback) // enable local testing
 #endif
                     yield return endpoint;
                 }
             }
         }
 
-        private bool IsLocal(EndpointAddress address) {
-            // TODO suffiecient?
-            return string.Compare(address.Uri.Host, Dns.GetHostName(), StringComparison.InvariantCultureIgnoreCase) == 0;
-        }
-
         public async Task<bool> ConnectAsync(SharingEndpoint endpoint) {
-            var host = endpoint.Address.Uri.Host.ToLower();
-            if (this.connectedHosts.ContainsKey(host))
+            var ip = IpHelper.GetIp(endpoint.Address.Uri.Host);
+            if (this.connectedHosts.ContainsKey(ip))
                 return true;
 
             var proxy = new ViewServiceClient(endpoint.Address);
-
             var result = await Task.Factory.StartNew<bool>(proxy.Connect);
             if (result)
-                this.connectedHosts.TryAdd(host, proxy);
+                this.connectedHosts.TryAdd(ip, proxy);
 
             return result;
         }
@@ -138,26 +133,31 @@
             return this.ConnectAsync(endpoint).Result;
         }
 
-        public bool Connect(string host) {
-            throw new NotImplementedException();
+        public bool Connect(string hostOrIp) {
+            var address = new EndpointAddress(string.Format(ViewServiceHost.BASE_ADDRESS, IpHelper.GetIp(hostOrIp), ViewServiceHost.PORT));
+            var endpoint = new SharingEndpoint("<quickadd>", address);
+
+            return this.ConnectAsync(endpoint).Result;
         }
 
-        public void Disconnect(string host) {
+        public void Disconnect(string hostOrIp)
+        {
             ViewServiceClient proxy;
-            if (this.connectedHosts.TryRemove(host.ToLower(), out proxy)) {
+            if (this.connectedHosts.TryRemove(IpHelper.GetIp(hostOrIp), out proxy)) {
                 proxy.Disconnect();
                 proxy.Close();
             }
         }
 
-        public void ShareWindows(string host, List<Window> windows) {
-            var proxy = this.GetProxy(host);
+        public void ShareWindows(string hostOrIp, List<Window> windows)
+        {
+            var proxy = this.GetProxy(hostOrIp);
             proxy.PushWindowList(windows);
         }
 
-        public void RequestWindowTransfer(string host, List<Window> windows)
+        public void RequestWindowTransfer(string hostOrIp, List<Window> windows)
         {
-            var proxy = this.GetProxy(host);
+            var proxy = this.GetProxy(hostOrIp);
             proxy.RequestWindowTransfer(windows);
         }
         
@@ -177,15 +177,17 @@
             }
         }
 
-        private void ViewServiceOnOnImageChange(Image display, string id, string host) {
-            this.RaiseOnScreenUpdateReceived(new ScreenUpdateEventArgs { Host = host, WindowId = id, Screen = display });
+        private void ViewServiceOnOnImageChange(Image display, string id, string ip) {
+            this.RaiseOnScreenUpdateReceived(new ScreenUpdateEventArgs { Ip = ip, WindowId = id, Screen = display });
         }
 
         #endregion
 
-        public ViewServiceClient GetProxy(string host) {
+        public ViewServiceClient GetProxy(string hostOrIp)
+        {
             ViewServiceClient proxy;
-            if (this.connectedHosts.TryGetValue(host.ToLower(), out proxy)) {
+            if (this.connectedHosts.TryGetValue(IpHelper.GetIp(hostOrIp), out proxy))
+            {
                 return proxy;
             }
 

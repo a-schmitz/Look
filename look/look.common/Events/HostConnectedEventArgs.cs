@@ -4,7 +4,7 @@
 
     public class HostConnectedEventArgs : EventArgs
     {
-        public string Host { get; set; }
+        public string Ip { get; set; }
 
         public bool Accepted { get; set; }
     }
