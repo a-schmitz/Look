@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -40,12 +42,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\HostDisconnectedEventArgs.cs" />
     <Compile Include="Events\HostConnectedEventArgs.cs" />
     <Compile Include="Events\ScreenUpdateEventArgs.cs" />
     <Compile Include="Events\WindowsRequestedEventArgs.cs" />
     <Compile Include="Events\WindowsSharedEventArgs.cs" />
     <Compile Include="Exceptions\HostNotConnectedException.cs" />
     <Compile Include="Helper\IpHelper.cs" />
+    <Compile Include="Model\RemoteHost.cs" />
     <Compile Include="Model\Window.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

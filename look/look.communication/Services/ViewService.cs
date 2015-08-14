@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Drawing;
-    using System.Net;
     using System.ServiceModel;
     using System.ServiceModel.Channels;
 
@@ -38,7 +37,8 @@
 
         public void Disconnect()
         {
-            throw new NotImplementedException();
+            var e = new HostDisconnectedEventArgs { Ip = this.GetIp() };
+            this.RaiseOnHostDisconnected(e);
         }
 
         public void PushAvailableWindows(List<Window> windows) {
@@ -121,6 +121,9 @@
         public delegate void ImageChangeHandler(Image display, string id, string ip);
         public static event ImageChangeHandler OnImageChange;
 
+        public delegate void HostDisconnectedHandler(object sender, HostDisconnectedEventArgs e);
+        public static event HostDisconnectedHandler OnHostDisconnected;
+
         #endregion
 
         private static readonly Dictionary<Guid, ViewSession> _sessions = new Dictionary<Guid, ViewSession>();        
@@ -178,6 +181,13 @@
             }
         }
 
+        private void RaiseOnHostDisconnected(HostDisconnectedEventArgs e)
+        {
+            if (OnHostDisconnected != null)
+            {
+                OnHostDisconnected(this, e);
+            }
+        }
     }
 
 }

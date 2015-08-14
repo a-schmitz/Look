@@ -66,11 +66,13 @@
         public delegate void WindowsSharedHandler(object sender, WindowsSharedEventArgs e);
         public delegate void WindowsRequestedHandler(object sender, WindowsRequestedEventArgs e);
         public delegate void ScreenUpdateHandler(object sender, ScreenUpdateEventArgs e);
+        public delegate void HostDisconnectedHandler(object sender, HostDisconnectedEventArgs e);
 
         public event HostConnectedHandler OnHostConnected;
         public event WindowsSharedHandler OnWindowsShared;
         public event WindowsRequestedHandler OnWindowsRequested;
         public event ScreenUpdateHandler OnScreenUpdateReceived;
+        public event HostDisconnectedHandler OnHostDisconnected;
 
         #endregion
 
@@ -85,6 +87,7 @@
             ViewService.OnWindowsShared += this.ViewServiceOnOnWindowsShared;
             ViewService.OnWindowsRequested += this.ViewServiceOnOnWindowsRequested;
             ViewService.OnImageChange += this.ViewServiceOnOnImageChange;
+            ViewService.OnHostDisconnected += this.ViewServiceOnOnHostDisconnected;
 
             this.acceptingConnections = true;
         }        
@@ -98,6 +101,7 @@
             ViewService.OnWindowsShared -= this.ViewServiceOnOnWindowsShared;
             ViewService.OnWindowsRequested -= this.ViewServiceOnOnWindowsRequested;
             ViewService.OnImageChange -= this.ViewServiceOnOnImageChange;
+            ViewService.OnHostDisconnected -= this.ViewServiceOnOnHostDisconnected;
 
             this.acceptingConnections = false;
         }
@@ -106,13 +110,14 @@
             this.StopAcceptingConnections();
         }
 
-        public IEnumerable<SharingEndpoint> FindClients() {
+        public IEnumerable<RemoteHost> FindClients()
+        {
             using (var client = new ViewServiceClient()) {
                 foreach (var endpoint in client.Discover()) {
 #if !DEBUG
                     if (!endpoint.Address.IsLoopback) // enable local testing
 #endif
-                    yield return endpoint;
+                    yield return new RemoteHost { Ip = IpHelper.GetIp(endpoint.Address.Uri.Host), Name = endpoint.Name };
                 }
             }
         }
@@ -145,8 +150,7 @@
         {
             ViewServiceClient proxy;
             if (this.connectedHosts.TryRemove(IpHelper.GetIp(hostOrIp), out proxy)) {
-                proxy.Disconnect();
-                proxy.Close();
+                proxy.Disconnect();                
             }
         }
 
@@ -197,6 +201,14 @@
                 this.OnScreenUpdateReceived(this, e);
             }
         }
+
+        private void RaiseOnHostDisconnected(HostDisconnectedEventArgs e)
+        {
+            if (this.OnHostDisconnected != null)
+            {
+                this.OnHostDisconnected(this, e);
+            }
+        }
         
 
         private void ViewServiceOnOnImageChange(Image display, string id, string ip) {
@@ -222,6 +234,13 @@
         private void ViewServiceOnOnWindowsRequested(object sender, WindowsRequestedEventArgs e)
         {
             this.RaiseOnWindowsRequested(e);
+        }
+
+        private void ViewServiceOnOnHostDisconnected(object sender, HostDisconnectedEventArgs e)
+        {
+            this.RaiseOnHostDisconnected(e);
+            ViewServiceClient proxy;
+            this.connectedHosts.TryRemove(IpHelper.GetIp(e.Ip), out proxy);
         }
 
         #endregion

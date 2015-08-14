@@ -1,4 +1,4 @@
-﻿namespace look.communication.Unmanaged
+﻿namespace look.capture.Unmanaged
 {
     using System;
     using System.Runtime.InteropServices;

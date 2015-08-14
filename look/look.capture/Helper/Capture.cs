@@ -1,10 +1,11 @@
-﻿namespace look.communication.Helper
+﻿namespace look.capture.Helper
 {
+
     using System;
     using System.Drawing;
     using System.Runtime.InteropServices;
 
-    using look.communication.Unmanaged;
+    using look.capture.Unmanaged;
 
     class Capture
     {
