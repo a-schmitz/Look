@@ -83,12 +83,13 @@
                         <views:SharedWindowsView  />
                     </DataTemplate>
                 </TabControl.Resources>
-             
+            
                 <TabControl.ItemTemplate>
                    
                     <DataTemplate>
                             <TextBlock Margin="10,0,0,0" FontSize="18" x:Name="HeaderTextBlock" Text="{Binding Header}" />
-                        <!--<DataTemplate.Triggers>
+                    </DataTemplate>
+                    <!--<DataTemplate.Triggers>
 
                             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}},Path=IsSelected}" Value="True">
                                 <Setter TargetName="HeaderTextBlock" Property="Foreground" Value="White" />
@@ -99,8 +100,6 @@
                             </DataTrigger>
                             
                         </DataTemplate.Triggers>-->
-
-                    </DataTemplate>
                    
                 </TabControl.ItemTemplate>
                
