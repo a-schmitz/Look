@@ -8,7 +8,6 @@
     using look.communication.Clients;
     using look.communication.Helper;
     using look.communication.Helper.Command;
-    using look.communication.Services;
     using look.utils;
 
     public class RemoteSharer : IDisposable
@@ -20,10 +19,9 @@
         private bool running;
         private int _numByteFullScreen = 1;
 
-        public RemoteSharer(EndpointAddress address)
+        public RemoteSharer(string host)
         {
-            var ctx = new InstanceContext(new ViewService());
-            proxy = new ViewServiceClient(ctx, address);
+            proxy = RemoteContext.Instance.GetProxy(host);
         }
 
         public void Start()

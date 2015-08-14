@@ -25,7 +25,8 @@
         private void Form1_Load(object sender, EventArgs e)
         {
             RemoteContext.Instance.OnScreenUpdateReceived += RemoteContextOnOnScreenUpdateReceived;
-            RemoteContext.Instance.StartAcceptingConnections("Alex");
+            RemoteContext.Instance.OnHostConnected += InstanceOnOnHostConnected;
+            RemoteContext.Instance.StartAcceptingConnections("Kekse");
 
             foreach (var endpoint in RemoteContext.Instance.FindClients())
             {
@@ -34,6 +35,16 @@
                 listBox1.Items.Add(entry);
             }
             
+        }
+
+        private void InstanceOnOnHostConnected(object sender, HostConnectedEventArgs e) {
+            var result = MessageBox.Show(
+                string.Format("Confirm? ({0})", e.Host),
+                "Connection Request",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            e.Accepted = result == DialogResult.Yes;
         }
 
         private void RemoteContextOnOnScreenUpdateReceived(object sender, ScreenUpdateEventArgs e)
@@ -47,7 +58,10 @@
         private void ThreadConnect()
         {
             var success = RemoteContext.Instance.Connect(endpoint);
-            System.Diagnostics.Debug.WriteLine(success);
+            if (success) {
+                share = new RemoteSharer(endpoint.Address.Uri.Host);
+                share.Start();
+            }
         }
         private void listBox1_DoubleClick(object sender, EventArgs e)
         {
@@ -56,8 +70,8 @@
             var connectScreen = new Thread(this.ThreadConnect);
             connectScreen.Start();
 
-            share = new RemoteSharer(endpoint.Address);
-            share.Start();
+            //var success = RemoteContext.Instance.Connect(endpoint);
+            //MessageBox.Show(success.ToString());
         }
 
         private delegate void UpdateImageDelegate(Image img);
@@ -75,6 +89,7 @@
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Application.Exit();
             share.Stop();
             share.Dispose();
             RemoteContext.Instance.StopAcceptingConnections();

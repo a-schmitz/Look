@@ -5,7 +5,7 @@
 
     using look.communication.Model;
 
-    [ServiceContract(CallbackContract = typeof(IViewService))]
+    [ServiceContract]
     public interface IViewService
     {
         #region bi-drectional

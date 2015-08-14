@@ -3,8 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.Net;
     using System.ServiceModel;
+    using System.ServiceModel.Channels;
 
+    using look.common.Events;
     using look.communication.Contracts;
     using look.communication.Helper.Command;
     using look.communication.Model;
@@ -12,12 +15,24 @@
 
     public class ViewService : IViewService
     {
-        public bool Connect()
-        {
-            return true;
-            // TODO add entry to connected list of remotecontext
-            //var ctx = Dns.GetHostEntry((OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name] as RemoteEndpointMessageProperty).Address).HostName;
-            //throw new NotImplementedException();
+
+        private string GetHost() {
+            try {
+                return Dns.GetHostEntry((OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name] as RemoteEndpointMessageProperty).Address).HostName;
+            } catch {
+                return null;
+            }
+        }
+
+        public bool Connect() {
+            var host = this.GetHost();
+            if (string.IsNullOrEmpty(host))
+                return false;
+
+            var e = new HostConnectedEventArgs { Host = host };
+            this.RaiseOnHostConnected(e);
+
+            return e.Accepted;
         }
 
         public void Disconnect()
@@ -90,9 +105,17 @@
             throw new NotImplementedException();
         }
 
-        private static readonly Dictionary<Guid, ViewSession> _sessions = new Dictionary<Guid, ViewSession>();
+        #region Events
+
+        public delegate void HostConnectedHandler(object sender, HostConnectedEventArgs e);
+        public static event HostConnectedHandler OnHostConnected;
+
         public delegate void ImageChangeHandler(Image display, string id, string host);
         public static event ImageChangeHandler OnImageChange;
+
+        #endregion
+
+        private static readonly Dictionary<Guid, ViewSession> _sessions = new Dictionary<Guid, ViewSession>();        
         public static CommandInfoCollection Commands = new CommandInfoCollection();
 
         private static void UpdateScreenImage(Guid id)
@@ -119,6 +142,15 @@
             if (OnImageChange != null)
             {
                 OnImageChange(viewSession.Display, viewSession.Id.ToString(), viewSession.Host);
+            }
+        }
+
+
+        private void RaiseOnHostConnected(HostConnectedEventArgs e)
+        {
+            if (OnHostConnected != null)
+            {
+                OnHostConnected(this, e);
             }
         }
     }
