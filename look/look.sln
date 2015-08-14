@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "look.communication", "look.communication\look.communication.csproj", "{53F23269-DF01-495E-B5F3-7EA61FA9254A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "look.sender", "look.sender\look.sender.csproj", "{FBD75CEB-D5AD-4FC8-A8A9-4EC890B8C1D2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "look.receiver", "look.receiver\look.receiver.csproj", "{355FEE14-78D7-41C0-B052-D8A406210E0A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "look.sender.wpf", "look.sender.wpf\look.sender.wpf.csproj", "{7562ADE0-A31D-4F3A-ABF8-18BC3EAB0C96}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPFClient", "WPFClient", "{33DB1ED1-B934-493F-BE87-72F82450B7B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "look.sender.wpf.controls", "look.sender.wpf.controls\look.sender.wpf.controls.csproj", "{2F1336D7-E52F-406E-B686-F8B03F778341}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "look.communication.test.forms", "look.communication.test.forms\look.communication.test.forms.csproj", "{A638C3EA-EF71-4305-9903-F5E9DEE4E5F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "look.common", "look.common\look.common.csproj", "{31CC868E-3B3C-498B-95E1-C847283CCAF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,6 @@ Global
 		{53F23269-DF01-495E-B5F3-7EA61FA9254A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53F23269-DF01-495E-B5F3-7EA61FA9254A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53F23269-DF01-495E-B5F3-7EA61FA9254A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FBD75CEB-D5AD-4FC8-A8A9-4EC890B8C1D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBD75CEB-D5AD-4FC8-A8A9-4EC890B8C1D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FBD75CEB-D5AD-4FC8-A8A9-4EC890B8C1D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FBD75CEB-D5AD-4FC8-A8A9-4EC890B8C1D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{355FEE14-78D7-41C0-B052-D8A406210E0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{355FEE14-78D7-41C0-B052-D8A406210E0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{355FEE14-78D7-41C0-B052-D8A406210E0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{355FEE14-78D7-41C0-B052-D8A406210E0A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7562ADE0-A31D-4F3A-ABF8-18BC3EAB0C96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7562ADE0-A31D-4F3A-ABF8-18BC3EAB0C96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7562ADE0-A31D-4F3A-ABF8-18BC3EAB0C96}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -41,6 +33,14 @@ Global
 		{2F1336D7-E52F-406E-B686-F8B03F778341}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F1336D7-E52F-406E-B686-F8B03F778341}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F1336D7-E52F-406E-B686-F8B03F778341}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A638C3EA-EF71-4305-9903-F5E9DEE4E5F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A638C3EA-EF71-4305-9903-F5E9DEE4E5F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A638C3EA-EF71-4305-9903-F5E9DEE4E5F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A638C3EA-EF71-4305-9903-F5E9DEE4E5F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31CC868E-3B3C-498B-95E1-C847283CCAF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31CC868E-3B3C-498B-95E1-C847283CCAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31CC868E-3B3C-498B-95E1-C847283CCAF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31CC868E-3B3C-498B-95E1-C847283CCAF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

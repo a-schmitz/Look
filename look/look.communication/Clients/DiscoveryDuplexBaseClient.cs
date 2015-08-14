@@ -7,11 +7,26 @@
     using System.ServiceModel.Discovery;
     using System.Threading.Tasks;
 
-    public abstract class DiscoveryBaseClient<T> : ClientBase<T> where T : class
+    using look.communication.Model;
+
+    public abstract class DiscoveryDuplexBaseClient<T> : DuplexClientBase<T> where T : class
     {
+        #region constructor
+
+        protected DiscoveryDuplexBaseClient() : base(new InstanceContext(new object()))
+        {
+        }
+
+        protected DiscoveryDuplexBaseClient(InstanceContext callbackInstance)
+            : base(callbackInstance)
+        {
+        }
+
+        #endregion
+
         #region public functions
 
-        public IEnumerable<EndpointAddress> Discover(IEnumerable<string> scopes = null)
+        public IEnumerable<SharingEndpoint> Discover(IEnumerable<string> scopes = null)
         {
             var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint());
 
@@ -23,10 +38,12 @@
                 yield break;
 
             foreach (var endpointDiscoveryMetadata in services.Endpoints)
-                yield return endpointDiscoveryMetadata.Address;
+            {
+                yield return this.TransformEndpoint(endpointDiscoveryMetadata);
+            }
         }
 
-        public async Task<IEnumerable<EndpointAddress>> DiscoverAsync(IEnumerable<string> scopes = null)
+        public async Task<IEnumerable<SharingEndpoint>> DiscoverAsync(IEnumerable<string> scopes = null)
         {
             var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint());
 
@@ -34,7 +51,7 @@
 
             discoveryClient.Close();
 
-            return services.Endpoints.Select(endpoint => endpoint.Address);
+            return services.Endpoints.Select(this.TransformEndpoint);
         }
 
         #endregion
@@ -56,6 +73,12 @@
 
             return findCriteria;
         }
+
+        protected virtual SharingEndpoint TransformEndpoint(EndpointDiscoveryMetadata endpoint)
+        {
+            return new SharingEndpoint(endpoint.Version.ToString(), endpoint.Address);
+        }
+
 
         #endregion
     }
