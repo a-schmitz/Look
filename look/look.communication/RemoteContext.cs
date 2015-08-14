@@ -11,6 +11,7 @@
     using look.common.Events;
     using look.common.Exceptions;
     using look.common.Helper;
+    using look.common.Model;
     using look.communication.Clients;
     using look.communication.Hosts;
     using look.communication.Model;
@@ -61,11 +62,15 @@
 
         #region Events
 
-        public delegate void ScreenUpdateHandler(object sender, ScreenUpdateEventArgs e);
         public delegate void HostConnectedHandler(object sender, HostConnectedEventArgs e);
+        public delegate void WindowsSharedHandler(object sender, WindowsSharedEventArgs e);
+        public delegate void WindowsRequestedHandler(object sender, WindowsRequestedEventArgs e);
+        public delegate void ScreenUpdateHandler(object sender, ScreenUpdateEventArgs e);
 
-        public event ScreenUpdateHandler OnScreenUpdateReceived;
         public event HostConnectedHandler OnHostConnected;
+        public event WindowsSharedHandler OnWindowsShared;
+        public event WindowsRequestedHandler OnWindowsRequested;
+        public event ScreenUpdateHandler OnScreenUpdateReceived;
 
         #endregion
 
@@ -77,25 +82,21 @@
 
             this.serviceHost.Start<ViewService>(name);
             ViewService.OnHostConnected += this.ViewServiceOnOnHostConnected;
+            ViewService.OnWindowsShared += this.ViewServiceOnOnWindowsShared;
+            ViewService.OnWindowsRequested += this.ViewServiceOnOnWindowsRequested;
             ViewService.OnImageChange += this.ViewServiceOnOnImageChange;
 
             this.acceptingConnections = true;
-        }
-
-        private void ViewServiceOnOnHostConnected(object sender, HostConnectedEventArgs e) {
-            this.RaiseOnHostConnected(e);
-            if (e.Accepted) {
-                var address = new EndpointAddress(string.Format(ViewServiceHost.BASE_ADDRESS, e.Ip, ViewServiceHost.PORT));
-                var proxy = new ViewServiceClient(address);
-                this.connectedHosts.TryAdd(e.Ip, proxy);
-            }
-        }
+        }        
 
         public void StopAcceptingConnections() {
             if (!this.acceptingConnections)
                 return;
 
             this.serviceHost.Stop();
+            ViewService.OnHostConnected -= this.ViewServiceOnOnHostConnected;
+            ViewService.OnWindowsShared -= this.ViewServiceOnOnWindowsShared;
+            ViewService.OnWindowsRequested -= this.ViewServiceOnOnWindowsRequested;
             ViewService.OnImageChange -= this.ViewServiceOnOnImageChange;
 
             this.acceptingConnections = false;
@@ -165,20 +166,62 @@
 
         #region Private Methods
 
-        private void RaiseOnScreenUpdateReceived(ScreenUpdateEventArgs e) {
-            if (this.OnScreenUpdateReceived != null) {
-                this.OnScreenUpdateReceived(this, e);
-            }
-        }
-
-        private void RaiseOnHostConnected(HostConnectedEventArgs e) {
-            if (this.OnHostConnected != null) {
+        private void RaiseOnHostConnected(HostConnectedEventArgs e)
+        {
+            if (this.OnHostConnected != null)
+            {
                 this.OnHostConnected(this, e);
             }
         }
 
+        private void RaiseOnWindowsShared(WindowsSharedEventArgs e)
+        {
+            if (this.OnWindowsShared != null)
+            {
+                this.OnWindowsShared(this, e);
+            }
+        }
+
+        private void RaiseOnWindowsRequested(WindowsRequestedEventArgs e)
+        {
+            if (this.OnWindowsRequested != null)
+            {
+                this.OnWindowsRequested(this, e);
+            }
+        }
+
+        private void RaiseOnScreenUpdateReceived(ScreenUpdateEventArgs e)
+        {
+            if (this.OnScreenUpdateReceived != null)
+            {
+                this.OnScreenUpdateReceived(this, e);
+            }
+        }
+        
+
         private void ViewServiceOnOnImageChange(Image display, string id, string ip) {
             this.RaiseOnScreenUpdateReceived(new ScreenUpdateEventArgs { Ip = ip, WindowId = id, Screen = display });
+        }
+
+        private void ViewServiceOnOnHostConnected(object sender, HostConnectedEventArgs e)
+        {
+            this.RaiseOnHostConnected(e);
+            if (e.Accepted)
+            {
+                var address = new EndpointAddress(string.Format(ViewServiceHost.BASE_ADDRESS, e.Ip, ViewServiceHost.PORT));
+                var proxy = new ViewServiceClient(address);
+                this.connectedHosts.TryAdd(e.Ip, proxy);
+            }
+        }
+
+        private void ViewServiceOnOnWindowsShared(object sender, WindowsSharedEventArgs e)
+        {
+            this.RaiseOnWindowsShared(e);
+        }
+
+        private void ViewServiceOnOnWindowsRequested(object sender, WindowsRequestedEventArgs e)
+        {
+            this.RaiseOnWindowsRequested(e);
         }
 
         #endregion

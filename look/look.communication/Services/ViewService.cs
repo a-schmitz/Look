@@ -8,6 +8,7 @@
     using System.ServiceModel.Channels;
 
     using look.common.Events;
+    using look.common.Model;
     using look.communication.Contracts;
     using look.communication.Helper.Command;
     using look.communication.Model;
@@ -40,9 +41,9 @@
             throw new NotImplementedException();
         }
 
-        public void PushAvailableWindows(List<Window> windows)
-        {
-            throw new NotImplementedException();
+        public void PushAvailableWindows(List<Window> windows) {
+            var e = new WindowsSharedEventArgs { Ip = this.GetIp(), Windows = windows };
+            this.RaiseOnWindowsShared(e);
         }
 
         public void PushScreenUpdate(byte[] data)
@@ -102,13 +103,20 @@
 
         public void RequestWindowTransfer(List<Window> windows)
         {
-            throw new NotImplementedException();
+            var e = new WindowsRequestedEventArgs { Ip = this.GetIp(), Windows = windows };
+            this.RaiseOnWindowsRequested(e);
         }
 
         #region Events
 
         public delegate void HostConnectedHandler(object sender, HostConnectedEventArgs e);
         public static event HostConnectedHandler OnHostConnected;
+        
+        public delegate void WindowsSharedHandler(object sender, WindowsSharedEventArgs e);
+        public static event WindowsSharedHandler OnWindowsShared;
+
+        public delegate void WindowsRequestedHandler(object sender, WindowsRequestedEventArgs e);
+        public static event WindowsRequestedHandler OnWindowsRequested;
 
         public delegate void ImageChangeHandler(Image display, string id, string ip);
         public static event ImageChangeHandler OnImageChange;
@@ -153,5 +161,23 @@
                 OnHostConnected(this, e);
             }
         }
+
+        private void RaiseOnWindowsShared(WindowsSharedEventArgs e)
+        {
+            if (OnWindowsShared != null)
+            {
+                OnWindowsShared(this, e);
+            }
+        }
+
+        private void RaiseOnWindowsRequested(WindowsRequestedEventArgs e)
+        {
+            if (OnWindowsRequested != null)
+            {
+                OnWindowsRequested(this, e);
+            }
+        }
+
     }
+
 }

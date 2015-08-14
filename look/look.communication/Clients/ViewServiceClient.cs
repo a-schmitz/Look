@@ -5,6 +5,7 @@
     using System.ServiceModel;
     using System.ServiceModel.Discovery;
 
+    using look.common.Model;
     using look.communication.Contracts;
     using look.communication.Hosts;
     using look.communication.Model;

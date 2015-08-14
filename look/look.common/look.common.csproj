@@ -42,8 +42,11 @@
   <ItemGroup>
     <Compile Include="Events\HostConnectedEventArgs.cs" />
     <Compile Include="Events\ScreenUpdateEventArgs.cs" />
+    <Compile Include="Events\WindowsRequestedEventArgs.cs" />
+    <Compile Include="Events\WindowsSharedEventArgs.cs" />
     <Compile Include="Exceptions\HostNotConnectedException.cs" />
     <Compile Include="Helper\IpHelper.cs" />
+    <Compile Include="Model\Window.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

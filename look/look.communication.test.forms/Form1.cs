@@ -3,12 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.Linq;
     using System.ServiceModel;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Forms;
 
     using look.common.Events;
+    using look.common.Model;
     using look.communication.Model;
 
     public partial class Form1 : Form
@@ -24,8 +26,10 @@
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            RemoteContext.Instance.OnScreenUpdateReceived += RemoteContextOnOnScreenUpdateReceived;
             RemoteContext.Instance.OnHostConnected += InstanceOnOnHostConnected;
+            RemoteContext.Instance.OnWindowsShared += InstanceOnOnWindowsShared;
+            RemoteContext.Instance.OnWindowsRequested += InstanceOnOnWindowsRequested;
+            RemoteContext.Instance.OnScreenUpdateReceived += RemoteContextOnOnScreenUpdateReceived;
             RemoteContext.Instance.StartAcceptingConnections("Kekse");
 
             foreach (var endpoint in RemoteContext.Instance.FindClients())
@@ -34,7 +38,23 @@
                 addresses.Add(entry, endpoint);
                 listBox1.Items.Add(entry);
             }
-            
+        }
+
+        private void InstanceOnOnWindowsRequested(object sender, WindowsRequestedEventArgs e) {
+            share = new RemoteSharer(e.Ip);
+            share.Start();
+        }
+
+        private void InstanceOnOnWindowsShared(object sender, WindowsSharedEventArgs e) {
+            var result = MessageBox.Show(
+                string.Format("{0} shared: {1}", e.Ip, string.Join(", ", e.Windows.Select(w => w.Name))),
+                "Accept Sharing?",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes) {
+                RemoteContext.Instance.RequestWindowTransfer(e.Ip, e.Windows);
+            }
         }
 
         private void InstanceOnOnHostConnected(object sender, HostConnectedEventArgs e) {
@@ -57,20 +77,22 @@
 
         private void ThreadConnect()
         {
-            //var success = RemoteContext.Instance.Connect(endpoint);
-            //if (success)
-            //{
-            //    share = new RemoteSharer(endpoint.Address.Uri.Host);
-            //    share.Start();
-            //}
+            var success = RemoteContext.Instance.Connect(endpoint);
+            if (!success)
+                return;
+            
+            var w = new Window { Id = Guid.NewGuid().ToString(), Name = "Desktop" };
+            RemoteContext.Instance.ShareWindows(this.endpoint.Address.Uri.Host, new List<Window> { w });
+            
+            
 
             //var success = RemoteContext.Instance.Connect("127.0.0.1");
-            var success = RemoteContext.Instance.Connect("DUS30LAP2C01099");
-            if (success)
-            {
-                share = new RemoteSharer("127.0.0.1");
-                share.Start();
-            }
+            //var success = RemoteContext.Instance.Connect("DUS30LAP2C01099");
+            //if (success)
+            //{
+            //    share = new RemoteSharer("127.0.0.1");
+            //    share.Start();
+            //}
         }
         private void listBox1_DoubleClick(object sender, EventArgs e)
         {

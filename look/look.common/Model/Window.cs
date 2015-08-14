@@ -1,4 +1,4 @@
-﻿namespace look.communication.Model
+﻿namespace look.common.Model
 {
     public class Window
     {
