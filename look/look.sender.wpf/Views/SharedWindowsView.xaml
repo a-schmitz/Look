@@ -5,7 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:look.sender.wpf.controls;assembly=look.sender.wpf.controls"
              xmlns:animatingTilePanel="clr-namespace:look.sender.wpf.controls._3rdParty.AnimatingTilePanel;assembly=look.sender.wpf.controls"
+             xmlns:viewModels="clr-namespace:look.sender.wpf.ViewModels"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModels:SharedWindowsViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <ScrollViewer Background="#FF2E3030" Margin="10">

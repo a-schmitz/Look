@@ -9,10 +9,14 @@
 
 namespace look.sender.wpf.ViewModels
 {
+    #region
+
     using look.sender.wpf.Interfaces;
     using look.sender.wpf.Models;
 
     using ReactiveUI;
+
+    #endregion
 
     /// <summary>
     ///     The remote viewer view model.
@@ -27,27 +31,21 @@ namespace look.sender.wpf.ViewModels
         /// <param name="screen">
         /// The screen.
         /// </param>
-        /// <param name="favorite">
+        /// <param name="remoteHost">
         /// The favorite.
         /// </param>
         /// <param name="tabName">
         /// The tab name.
         /// </param>
-        public RemoteViewerViewModel(IScreen screen, Favorite favorite, string tabName)
-        {
+        public RemoteViewerViewModel(IScreen screen, RemoteHost remoteHost, string tabName) {
             this.HostScreen = screen;
-            this.Favorite = favorite;
+            this.RemoteHost = remoteHost;
             this.Header = tabName;
         }
 
         #endregion
 
         #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the favorite.
-        /// </summary>
-        public Favorite Favorite { get; set; }
 
         /// <summary>
         ///     Gets or sets the header.
@@ -60,16 +58,16 @@ namespace look.sender.wpf.ViewModels
         public IScreen HostScreen { get; set; }
 
         /// <summary>
-        /// Gets the url path segment.
+        ///     Gets or sets the favorite.
         /// </summary>
-        public string UrlPathSegment
-        {
-            get
-            {
-                return "remoteviewer";
-            }
-        }
+        public RemoteHost RemoteHost { get; set; }
+
+        /// <summary>
+        ///     Gets the url path segment.
+        /// </summary>
+        public string UrlPathSegment { get { return "remoteviewer"; } }
 
         #endregion
     }
+
 }

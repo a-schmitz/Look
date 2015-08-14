@@ -36,6 +36,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DynamicData, Version=4.2.0.1068, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DynamicData.4.2.0.1068\lib\net45\DynamicData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DynamicData.Plinq, Version=4.2.0.1068, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DynamicData.4.2.0.1068\lib\net45\DynamicData.Plinq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=1.1.2.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
@@ -92,10 +100,13 @@
     <Compile Include="Interfaces\IHomeViewModel.cs" />
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="Interfaces\ITabViewModel.cs" />
+    <Compile Include="Models\Favorite.cs" />
     <Compile Include="Models\ShareableWindow.cs" />
     <Compile Include="Interfaces\IWindowService.cs" />
+    <Compile Include="Models\RemoteHostShareableWindow.cs" />
+    <Compile Include="Services\FavoritesService.cs" />
     <Compile Include="Services\WindowService.cs" />
-    <Compile Include="Models\Favorite.cs" />
+    <Compile Include="Models\RemoteHost.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="Interfaces\IRemoteViewerViewModel.cs" />
     <Compile Include="Interfaces\ISharedWindowsViewModel.cs" />

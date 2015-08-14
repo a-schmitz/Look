@@ -9,10 +9,13 @@
 
 namespace look.sender.wpf.Interfaces
 {
+
     /// <summary>
-    /// The RemoteViewerViewModel interface.
+    ///     The RemoteViewerViewModel interface.
     /// </summary>
     public interface IRemoteViewerViewModel : ITabViewModel
     {
+
     }
+
 }

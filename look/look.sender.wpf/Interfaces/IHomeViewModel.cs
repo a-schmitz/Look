@@ -11,6 +11,10 @@ namespace look.sender.wpf.Interfaces
 {
     #region
 
+    using System;
+
+    using DynamicData;
+
     using look.sender.wpf.Models;
 
     using ReactiveUI;
@@ -27,18 +31,19 @@ namespace look.sender.wpf.Interfaces
         /// <summary>
         ///     Gets or sets the favorites.
         /// </summary>
-        ReactiveList<Favorite> Favorites { get; set; }
+        ReactiveList<RemoteHost> RemoteHosts { get; set; }
 
         /// <summary>
         ///     Gets or sets the favorite.
         /// </summary>
-        Favorite SelectedFavorite { get; set; }
+        RemoteHost SelectedRemoteHost { get; set; }
 
         /// <summary>
         ///     Gets or sets the shareable windows.
         /// </summary>
-        ReactiveList<ShareableWindow> ShareableWindows { get; set; }
+        ISourceCache<ShareableWindow, IntPtr> ShareableWindows { get; set; }
 
         #endregion
     }
+
 }

@@ -7,14 +7,14 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace look.sender.wpf.ViewModels
+namespace look.sender.wpf
 {
     #region
 
     using System.Reactive.Concurrency;
     using System.Windows;
 
-    using look.sender.wpf.Interfaces;
+    using look.sender.wpf.ViewModels;
     using look.sender.wpf.Views;
 
     using ReactiveUI;
@@ -79,8 +79,8 @@ namespace look.sender.wpf.ViewModels
             dependencyResolver.RegisterConstant(this, typeof(IScreen));
 
             dependencyResolver.Register(() => new HomeView(), typeof(IViewFor<HomeViewModel>));
-            //dependencyResolver.Register(() => new RemoteViewerView(), typeof(IViewFor<IRemoteViewerViewModel>));
-           // dependencyResolver.Register(() => new SharedWindowsView(), typeof(IViewFor<ISharedWindowsViewModel>));
+            // dependencyResolver.Register(() => new RemoteViewerView(), typeof(IViewFor<IRemoteViewerViewModel>));
+            // dependencyResolver.Register(() => new SharedWindowsView(), typeof(IViewFor<ISharedWindowsViewModel>));
         }
 
         #endregion

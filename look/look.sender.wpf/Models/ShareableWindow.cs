@@ -23,15 +23,6 @@ namespace look.sender.wpf.Models
     /// </summary>
     public class ShareableWindow : ReactiveObject
     {
-        #region Fields
-
-        /// <summary>
-        ///     The is shared.
-        /// </summary>
-        private bool isShared;
-
-        #endregion
-
         #region Public Properties
 
         /// <summary>
@@ -50,27 +41,6 @@ namespace look.sender.wpf.Models
         public ImageSource Icon { get; set; }
 
         /// <summary>
-        ///     Gets or sets the id.
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether is shared.
-        /// </summary>
-        public bool IsShared
-        {
-            get
-            {
-                return this.isShared;
-            }
-
-            set
-            {
-                this.RaiseAndSetIfChanged(ref this.isShared, value);
-            }
-        }
-
-        /// <summary>
         ///     Gets or sets the process name.
         /// </summary>
         public string ProcessName { get; set; }
@@ -87,4 +57,5 @@ namespace look.sender.wpf.Models
 
         #endregion
     }
+
 }

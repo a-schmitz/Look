@@ -15,9 +15,9 @@ namespace look.sender.wpf.ViewModels
     using System.Diagnostics;
     using System.Linq;
     using System.Reactive.Disposables;
-    using System.Reactive.Linq;
-    using System.Runtime.Remoting.Messaging;
     using System.Windows.Threading;
+
+    using DynamicData;
 
     using look.sender.wpf.Interfaces;
     using look.sender.wpf.Models;
@@ -35,9 +35,9 @@ namespace look.sender.wpf.ViewModels
         #region Fields
 
         /// <summary>
-        ///     The favorites.
+        /// The cleanup.
         /// </summary>
-        private ReactiveList<Favorite> favorites;
+        private IDisposable cleanup;
 
         /// <summary>
         ///     The refresh timer.
@@ -45,14 +45,19 @@ namespace look.sender.wpf.ViewModels
         private DispatcherTimer refreshTimer;
 
         /// <summary>
+        ///     The favorites.
+        /// </summary>
+        private ReactiveList<RemoteHost> remoteHosts;
+
+        /// <summary>
         ///     The selected favorite.
         /// </summary>
-        private Favorite selectedFavorite;
+        private RemoteHost selectedRemoteHost;
 
         /// <summary>
         ///     The shareable windows.
         /// </summary>
-        private ReactiveList<ShareableWindow> shareableWindows;
+        private ISourceCache<ShareableWindow, IntPtr> shareableWindows;
 
         #endregion
 
@@ -78,27 +83,30 @@ namespace look.sender.wpf.ViewModels
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the favorites.
-        /// </summary>
-        public ReactiveList<Favorite> Favorites { get { return this.favorites; } set { this.RaiseAndSetIfChanged(ref this.favorites, value); } }
-
-        /// <summary>
         ///     Gets the host screen.
         /// </summary>
         public IScreen HostScreen { get; private set; }
 
         /// <summary>
+        ///     Gets or sets the favorites.
+        /// </summary>
+        public ReactiveList<RemoteHost> RemoteHosts {
+            get { return this.remoteHosts; }
+            set { this.RaiseAndSetIfChanged(ref this.remoteHosts, value); }
+        }
+
+        /// <summary>
         ///     Gets or sets the selected favorite.
         /// </summary>
-        public Favorite SelectedFavorite {
-            get { return this.selectedFavorite; }
-            set { this.RaiseAndSetIfChanged(ref this.selectedFavorite, value); }
+        public RemoteHost SelectedRemoteHost {
+            get { return this.selectedRemoteHost; }
+            set { this.RaiseAndSetIfChanged(ref this.selectedRemoteHost, value); }
         }
 
         /// <summary>
         ///     Gets or sets the shareable windows.
         /// </summary>
-        public ReactiveList<ShareableWindow> ShareableWindows {
+        public ISourceCache<ShareableWindow, IntPtr> ShareableWindows {
             get { return this.shareableWindows; }
             set { this.RaiseAndSetIfChanged(ref this.shareableWindows, value); }
         }
@@ -120,7 +128,7 @@ namespace look.sender.wpf.ViewModels
         #endregion
 
         #region Methods
-
+        
         /// <summary>
         ///     The init view model.
         /// </summary>
@@ -128,46 +136,25 @@ namespace look.sender.wpf.ViewModels
         ///     The <see cref="IDisposable" />.
         /// </returns>
         private IDisposable InitViewModel() {
-            this.ShareableWindows = new ReactiveList<ShareableWindow>() { ChangeTrackingEnabled = true };
+            // this.ShareableWindows = new ReactiveList<ShareableWindow>() { ChangeTrackingEnabled = true };
+
+            this.ShareableWindows = new SourceCache<ShareableWindow, IntPtr>(w => w.Handle);
 
             // TODO: loading Favorites from file
-            this.Favorites = new ReactiveList<Favorite> {
-                new Favorite() { Name = "HAN07WST12345", IpAddress = "192.168.150.1" }, 
-                new Favorite() { Name = "HAN07WST54321", IpAddress = "192.168.150.10" }, 
-                new Favorite() { Name = "HAN07WST23321", IpAddress = "192.168.150.100" }
+            this.RemoteHosts = new ReactiveList<RemoteHost> {
+                new RemoteHost() { Name = "HAN07WST12345", IpAddress = "192.168.150.1" }, 
+                new RemoteHost() { Name = "HAN07WST54321", IpAddress = "192.168.150.10" }, 
+                new RemoteHost() { Name = "HAN07WST23321", IpAddress = "192.168.150.100" }
             };
 
-            foreach (var f in this.Favorites)
-                f.Tabs.Add(new SharedWindowsViewModel(this.HostScreen, this.Favorites[0], this.ShareableWindows, "My Shares"));
+            foreach (var f in this.RemoteHosts)
+                f.Tabs.Add(new SharedWindowsViewModel(this.HostScreen, this.RemoteHosts[0], this.ShareableWindows.AsObservableCache(), "My Shares"));
 
-            this.Favorites[0].Tabs.Add(new RemoteViewerViewModel(this.HostScreen, this.Favorites[0], "Test1"));
-            this.Favorites[0].Tabs.Add(new RemoteViewerViewModel(this.HostScreen, this.Favorites[0], "Test2"));
+            //var f2 = new FavoritesService();
+            //f2.UpdateFavorites(this.RemoteHosts.Select(x => new Favorite() { Ip = x.IpAddress, Name = x.Name }));
 
-            // before selected Favorite changes, sync shared windows settings
-            this.ObservableForProperty(x => x.SelectedFavorite, true).Select(x => x.Value).Subscribe(
-                favorite => {
-
-                    if (favorite == null)
-                        return;
-
-                    foreach (var window in this.ShareableWindows)
-                        if (window.IsShared && !favorite.SharedWindows.Contains(window)) {
-                            favorite.SharedWindows.Add(window);
-                        } else if (!window.IsShared) {
-                            favorite.SharedWindows.Remove(window);
-                        }
-                });
-
-            // when selected favorite changes, set respective SharedWindows flags
-            this.WhenAnyValue(x => x.SelectedFavorite)
-                .Subscribe(
-                favorite => {
-                    if (favorite == null)
-                        return;
-
-                    foreach (var window in this.ShareableWindows)
-                        window.IsShared = favorite.SharedWindows.Contains(window);
-                });
+            // this.RemoteHosts[0].Tabs.Add(new RemoteViewerViewModel(this.HostScreen, this.RemoteHosts[0], "Test1"));
+            // this.RemoteHosts[0].Tabs.Add(new RemoteViewerViewModel(this.HostScreen, this.RemoteHosts[0], "Test2"));
 
             // start refresh timer for collecting shareable windows
             this.refreshTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 1) };
@@ -175,8 +162,10 @@ namespace look.sender.wpf.ViewModels
             this.refreshTimer.Start();
 
             // select first host and select first tab
-            this.SelectedFavorite = this.Favorites[0];
-            this.SelectedFavorite.SelectedViewModel = this.SelectedFavorite.Tabs[0];
+            this.SelectedRemoteHost = this.RemoteHosts[0];
+            this.SelectedRemoteHost.SelectedViewModel = this.SelectedRemoteHost.Tabs[0];
+
+            this.cleanup = new CompositeDisposable(this.ShareableWindows);
 
             return Disposable.Create(this.Shutdown);
         }
@@ -185,22 +174,9 @@ namespace look.sender.wpf.ViewModels
         ///     The refresh shareable windows.
         /// </summary>
         private void RefreshShareableWindows() {
-            // using (this.ShareableWindows.SuppressChangeNotifications()) {
-            // Debug.WriteLine("Refreshing ------------- ");
             var windows = this.WindowService.GetShareableWindows();
-            foreach (var w in windows.Where(ws => this.ShareableWindows.All(s => s.Handle != ws.Handle))) {
-                this.ShareableWindows.Add(w);
-                Debug.WriteLine("Added " + w.Title);
-            }
-
-            var listDelete = this.ShareableWindows.Where(ws => windows.All(w => w.Handle != ws.Handle)).ToList();
-            listDelete.ForEach(
-                ld => {
-                    this.ShareableWindows.Remove(ld);
-                    Debug.WriteLine("Removed " + ld.Title);
-                });
-
-            // }
+            this.ShareableWindows.AddOrUpdate(windows.Where(ws => this.ShareableWindows.Items.All(s => s.Handle != ws.Handle)));
+            this.ShareableWindows.RemoveKeys(this.ShareableWindows.Items.Where(ws => windows.All(w => w.Handle != ws.Handle)).Select(x => x.Handle));
         }
 
         /// <summary>
@@ -208,6 +184,9 @@ namespace look.sender.wpf.ViewModels
         /// </summary>
         private void Shutdown() {
             this.refreshTimer.Stop();
+
+            this.cleanup.Dispose();
+
             Debug.WriteLine("Shutdown.");
         }
 

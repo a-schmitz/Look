@@ -38,10 +38,6 @@ namespace look.sender.wpf.Services
         ///     The <see cref="IEnumerable" />.
         /// </returns>
         public IEnumerable<ShareableWindow> GetShareableWindows() {
-            // foreach (var p in Process.GetProcesses().Where(pr => pr.MainWindowTitle != ""))
-            // {
-            // Debug.WriteLine(p.MainModule.FileVersionInfo.ProductName);
-            // }
             var list =
                 Process.GetProcesses().Where(process => !string.IsNullOrEmpty(process.MainWindowTitle)).Select(
                     p =>
@@ -49,7 +45,6 @@ namespace look.sender.wpf.Services
                         Handle = p.MainWindowHandle, 
                         ProcessName = p.ProcessName, 
                         Title = p.MainWindowTitle, 
-                        Id = p.Id, 
                         ProcessPath = p.MainModule.FileName, 
                         Application = p.MainModule.FileVersionInfo.ProductName
                     }).ToList();
@@ -58,8 +53,6 @@ namespace look.sender.wpf.Services
                 p => {
                     using (var sysicon = Icon.ExtractAssociatedIcon(p.ProcessPath))
                         if (sysicon != null)
-                            // using (var s = new FileStream(string.Format("c:\\temp\\{0}.ico", p.Application), FileMode.CreateNew))
-                            // sysicon.Save(s);
                             p.Icon = Imaging.CreateBitmapSourceFromHIcon(sysicon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 });
 

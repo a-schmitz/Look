@@ -51,7 +51,7 @@ namespace look.sender.wpf.Views
 
             this.WhenAnyValue(x => x.ViewModel).BindTo(this, x => x.DataContext);
 
-            this.Bind(this.ViewModel, x => x.SelectedFavorite, x => x.FavoriteList.SelectedItem);
+            this.Bind(this.ViewModel, x => x.SelectedRemoteHost, x => x.FavoriteList.SelectedItem);
         }
 
         #endregion
