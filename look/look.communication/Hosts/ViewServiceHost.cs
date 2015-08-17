@@ -5,6 +5,7 @@
     using System.ServiceModel.Discovery;
 
     using look.common.Helper;
+    using look.communication.Clients;
     using look.communication.Contracts;
 
     public class ViewServiceHost
@@ -44,6 +45,9 @@
                 var endpoint = this.serviceHost.Description.Endpoints.Find(typeof(IViewService));
                 if (endpoint != null)
                     endpoint.EndpointBehaviors.Add(behavior);
+
+                var e = new UdpDiscoveryEndpoint(DiscoveryBaseClient<IViewService>.GetMulticastAddress());
+                this.serviceHost.Description.Endpoints.Add(e);
 
                 this.serviceHost.Open();
 

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.Sockets;
     using System.ServiceModel;
     using System.ServiceModel.Discovery;
     using System.Threading.Tasks;
@@ -15,7 +16,7 @@
 
         public IEnumerable<SharingEndpoint> Discover(IEnumerable<string> scopes = null)
         {
-            var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint());
+            var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint(GetMulticastAddress()));
 
             var services = discoveryClient.Find(this.CreateFindCriteria(scopes));
 
@@ -64,6 +65,15 @@
         protected virtual SharingEndpoint TransformEndpoint(EndpointDiscoveryMetadata endpoint)
         {
             return new SharingEndpoint(endpoint.Version.ToString(), endpoint.Address);
+        }
+
+        public static Uri GetMulticastAddress()
+        {
+            if (!Socket.OSSupportsIPv4)
+            {
+                return new Uri("soap.udp://[FF02::C]:10001");
+            }
+            return new Uri("soap.udp://239.255.255.250:10001");
         }
 
         #endregion
