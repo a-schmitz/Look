@@ -122,6 +122,22 @@
             }
         }
 
+        public async Task<IEnumerable<RemoteHost>> FindClientsAsync()
+        {
+            var hosts = new List<RemoteHost>();
+            using (var client = new ViewServiceClient())
+            {
+                foreach (var endpoint in await client.DiscoverAsync())
+                {
+#if !DEBUG
+                    if (!endpoint.Address.IsLoopback) // enable local testing
+#endif
+                    hosts.Add(new RemoteHost { Ip = IpHelper.GetIp(endpoint.Address.Uri.Host), Name = endpoint.Name });
+                }
+            }
+            return hosts;
+        }
+
         public async Task<bool> ConnectAsync(SharingEndpoint endpoint) {
             var ip = IpHelper.GetIp(endpoint.Address.Uri.Host);
             if (this.connectedHosts.ContainsKey(ip))
