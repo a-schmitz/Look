@@ -1,5 +1,6 @@
 ﻿namespace look.common.Helper
 {
+    using System;
     using System.Linq;
     using System.Net;
     using System.Net.NetworkInformation;
@@ -44,6 +45,16 @@
             var localIp = Dns.GetHostAddresses(host).FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
 
             return localIp != null ? localIp.ToString() : null;
+        }
+
+        public static Uri GetMulticastAddress()
+        {
+            // TODO port configurable default 3702
+            if (!Socket.OSSupportsIPv4)
+            {
+                return new Uri("soap.udp://[FF02::C]:10001");
+            }
+            return new Uri("soap.udp://239.255.255.250:10001");
         }
     }
 }

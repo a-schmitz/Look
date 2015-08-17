@@ -8,6 +8,7 @@
     using System.ServiceModel.Discovery;
     using System.Threading.Tasks;
 
+    using look.common.Helper;
     using look.communication.Model;
 
     public abstract class DiscoveryBaseClient<T> : ClientBase<T> where T : class
@@ -16,7 +17,7 @@
 
         public IEnumerable<SharingEndpoint> Discover(IEnumerable<string> scopes = null)
         {
-            var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint(GetMulticastAddress()));
+            var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint(IpHelper.GetMulticastAddress()));
 
             var services = discoveryClient.Find(this.CreateFindCriteria(scopes));
 
@@ -65,15 +66,6 @@
         protected virtual SharingEndpoint TransformEndpoint(EndpointDiscoveryMetadata endpoint)
         {
             return new SharingEndpoint(endpoint.Version.ToString(), endpoint.Address);
-        }
-
-        public static Uri GetMulticastAddress()
-        {
-            if (!Socket.OSSupportsIPv4)
-            {
-                return new Uri("soap.udp://[FF02::C]:10001");
-            }
-            return new Uri("soap.udp://239.255.255.250:10001");
         }
 
         #endregion
