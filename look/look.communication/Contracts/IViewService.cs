@@ -4,7 +4,6 @@
     using System.ServiceModel;
 
     using look.common.Model;
-    using look.communication.Model;
 
     [ServiceContract]
     public interface IViewService

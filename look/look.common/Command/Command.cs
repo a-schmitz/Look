@@ -1,4 +1,4 @@
-﻿namespace look.communication.Helper.Command
+﻿namespace look.common.Command
 {
     using System.Windows.Forms;
 

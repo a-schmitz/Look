@@ -35,6 +35,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,6 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command\Command.cs" />
+    <Compile Include="Command\CommandInfo.cs" />
+    <Compile Include="Command\CommandInfoCollection.cs" />
+    <Compile Include="Command\CommandTypeOption.cs" />
     <Compile Include="Events\HostDisconnectedEventArgs.cs" />
     <Compile Include="Events\HostConnectedEventArgs.cs" />
     <Compile Include="Events\ScreenUpdateEventArgs.cs" />
@@ -49,6 +54,7 @@
     <Compile Include="Events\WindowsSharedEventArgs.cs" />
     <Compile Include="Exceptions\HostNotConnectedException.cs" />
     <Compile Include="Helper\IpHelper.cs" />
+    <Compile Include="Helper\Utils.cs" />
     <Compile Include="Model\RemoteHost.cs" />
     <Compile Include="Model\Window.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

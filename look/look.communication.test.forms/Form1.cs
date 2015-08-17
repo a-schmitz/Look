@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Drawing;
     using System.Linq;
     using System.Threading;
@@ -10,12 +11,12 @@
     using look.capture;
     using look.common.Events;
     using look.common.Model;
-    using look.communication.Model;
 
     public partial class Form1 : Form
     {
 
         private readonly Dictionary<string, string> addresses = new Dictionary<string, string>();
+        private readonly List<Tuple<string, string, IntPtr>> windows = new List<Tuple<string, string, IntPtr>>();
         RemoteSharer share;
 
         private string ip;
@@ -34,11 +35,17 @@
             RemoteContext.Instance.OnHostDisconnected += InstanceOnOnHostDisconnected;
             RemoteContext.Instance.StartAcceptingConnections("Kekse");
 
-            foreach (var host in RemoteContext.Instance.FindClients())
-            {
+            foreach (var host in RemoteContext.Instance.FindClients()) {
                 var entry = string.Format("{0} ({1})", host.Name, host.Ip);
                 addresses.Add(entry, host.Ip);
                 listBox1.Items.Add(entry);
+            }
+
+            windows.Add(new Tuple<string, string, IntPtr>(Guid.NewGuid().ToString(), "Desktop", IntPtr.Zero));
+
+            foreach (var p in Process.GetProcesses().Where(process => !string.IsNullOrEmpty(process.MainWindowTitle))) {
+                windows.Add(new Tuple<string, string, IntPtr>(Guid.NewGuid().ToString(), p.MainWindowTitle, p.MainWindowHandle));
+                listBox2.Items.Add(p.MainWindowTitle);
             }
         }
 
@@ -49,7 +56,9 @@
 
         private void InstanceOnOnWindowsRequested(object sender, WindowsRequestedEventArgs e) {
             share = new RemoteSharer(e.Ip);
-            share.Start();
+            var id = e.Windows.First().Id;
+            var handle = windows.First(entry => entry.Item1 == id).Item3;
+            share.Start(handle);
         }
 
         private void InstanceOnOnWindowsShared(object sender, WindowsSharedEventArgs e) {
@@ -85,9 +94,25 @@
             var success = RemoteContext.Instance.Connect(ip);
             if (!success)
                 return;
-            
-            var w = new Window { Id = Guid.NewGuid().ToString(), Name = "Desktop" };
+
+            string title;
+            try {
+                title = GetSelectedItem();
+            } catch (NullReferenceException) {
+                title = "Desktop";
+            }
+
+            var id = windows.First(entry => entry.Item2 == title).Item1;
+
+            var w = new Window { Id = id, Name = title };
             RemoteContext.Instance.ShareWindows(ip, new List<Window> { w });
+        }
+
+        private delegate string GetSelectedItemDelegate();
+        private string GetSelectedItem() {
+            if (listBox2.InvokeRequired)
+                return Invoke(new GetSelectedItemDelegate(this.GetSelectedItem)).ToString();
+            return listBox2.SelectedItem.ToString();
         }
 
         private void listBox1_DoubleClick(object sender, EventArgs e)

@@ -66,7 +66,6 @@
             return new SharingEndpoint(endpoint.Version.ToString(), endpoint.Address);
         }
 
-
         #endregion
     }
 }

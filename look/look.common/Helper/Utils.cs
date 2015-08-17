@@ -1,18 +1,17 @@
-﻿namespace look.utils
+﻿namespace look.common.Helper
 {
+
     using System;
     using System.Drawing;
     using System.IO;
 
     public static class Utils
     {
-        public static Guid Id = Guid.NewGuid();
-
         private const int NumBytesInInt = sizeof(int);
 
-        public static byte[] PackScreenCaptureData(Image image, Rectangle bounds)
+        public static byte[] PackScreenCaptureData(Guid id, Image image, Rectangle bounds)
         {
-            var idData = Id.ToByteArray();
+            var idData = id.ToByteArray();
 
             byte[] imgData;
             using (var ms = new MemoryStream())
@@ -71,9 +70,9 @@
             id = new Guid(idData);
         }
 
-        public static byte[] PackCursorCaptureData(Image image, int cursorX, int cursorY)
+        public static byte[] PackCursorCaptureData(Guid id, Image image, int cursorX, int cursorY)
         {
-            var idData = Id.ToByteArray();
+            var idData = id.ToByteArray();
             byte[] imgData;
             using (var ms = new MemoryStream())
             {
@@ -119,7 +118,7 @@
             id = new Guid(idData);
         }
 
-        public static void UpdateScreen(ref Image screen, Image newPartialScreen, Rectangle boundingBox)
+        public static void UpdateScreenImage(ref Image screen, Image newPartialScreen, Rectangle boundingBox)
         {
             if (screen == null)
                 screen = new Bitmap(boundingBox.Width, boundingBox.Height);
@@ -139,16 +138,6 @@
                 if (g != null)
                     g.Dispose();
             }
-        }
-
-        public static void UpdateScreen(ref Image screen, byte[] data)
-        {
-            Image partial;
-            Rectangle bounds;
-            Guid id;
-
-            UnpackScreenCaptureData(data, out partial, out bounds, out id);
-            UpdateScreen(ref screen, partial, bounds);
         }
 
         public static Image MergeScreenAndCursor(Image screen, Image cursor, int cursorX, int cursorY)

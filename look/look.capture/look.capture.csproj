@@ -51,6 +51,10 @@
     <Compile Include="Unmanaged\WIN32.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\look.common\look.common.csproj">
+      <Project>{31cc868e-3b3c-498b-95e1-c847283ccaf1}</Project>
+      <Name>look.common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\look.communication\look.communication.csproj">
       <Project>{53f23269-df01-495e-b5f3-7ea61fa9254a}</Project>
       <Name>look.communication</Name>

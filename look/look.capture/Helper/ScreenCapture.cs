@@ -26,15 +26,15 @@
         /// <param name="bounds">The bounding box that encompasses
         /// all changed pixels.</param>
         /// <returns>Full or partial bitmap, null for no changes</returns>
-        public Bitmap Screen(ref Rectangle bounds)
+        public Bitmap Screen(ref Rectangle bounds, IntPtr handle = default(IntPtr))
         {
+            
             Bitmap diff = null;
 
             // Capture a new screenshot.
             //
-            lock (this._newBitmap)
-            {
-                this._newBitmap = Capture.CaptureDesktop();
+            lock (this._newBitmap) {
+                this._newBitmap = handle.Equals(default(IntPtr)) ? Capture.CaptureDesktop() : Capture.CaptureHandle(handle);
 
                 // If we have a previous screenshot, only send back
                 //	a subset that is the minimum rectangular area

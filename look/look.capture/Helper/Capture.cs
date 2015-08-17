@@ -15,6 +15,47 @@
             public int Cy;
         }
 
+        public static Bitmap CaptureHandle(IntPtr handle)
+        {
+            Bitmap bmp = null;
+
+            var hDC = IntPtr.Zero;
+            try
+            {
+                SIZE size;
+                hDC = WIN32.GetDC(handle);
+                var hMemDC = GDI32.CreateCompatibleDC(hDC);
+
+                size.Cx = WIN32.GetSystemMetrics(WIN32.SM_CXSCREEN);
+                size.Cy = WIN32.GetSystemMetrics(WIN32.SM_CYSCREEN);
+
+                var hBitmap = GDI32.CreateCompatibleBitmap(hDC, size.Cx, size.Cy);
+
+                if (hBitmap != IntPtr.Zero)
+                {
+                    var hOld = GDI32.SelectObject(hMemDC, hBitmap);
+
+                    GDI32.BitBlt(hMemDC, 0, 0, size.Cx, size.Cy, hDC, 0, 0, GDI32.SRCCOPY);
+                    GDI32.SelectObject(hMemDC, hOld);
+                    GDI32.DeleteDC(hMemDC);
+
+                    bmp = Image.FromHbitmap(hBitmap);
+
+                    GDI32.DeleteObject(hBitmap);
+                    GC.Collect();
+                }
+            }
+            finally
+            {
+                if (hDC != IntPtr.Zero)
+                {
+                    WIN32.ReleaseDC(handle, hDC);
+                }
+            }
+
+            return bmp;
+        }
+
         public static Bitmap CaptureDesktop()
         {
             Bitmap bmp = null;

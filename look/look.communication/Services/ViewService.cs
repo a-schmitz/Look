@@ -6,12 +6,12 @@
     using System.ServiceModel;
     using System.ServiceModel.Channels;
 
+    using look.common.Command;
     using look.common.Events;
+    using look.common.Helper;
     using look.common.Model;
     using look.communication.Contracts;
-    using look.communication.Helper.Command;
     using look.communication.Model;
-    using look.utils;
 
     public class ViewService : IViewService
     {
@@ -67,7 +67,7 @@
                 viewSession = _sessions[id];
             }
 
-            Utils.UpdateScreen(ref viewSession.Screen, partial, bounds);
+            Utils.UpdateScreenImage(ref viewSession.Screen, partial, bounds);
 
             UpdateScreenImage(id);
         }

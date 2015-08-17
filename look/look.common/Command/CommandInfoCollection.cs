@@ -1,5 +1,6 @@
-﻿namespace look.communication.Helper.Command
+﻿namespace look.common.Command
 {
+
     using System.Collections.Concurrent;
     using System.Text;
     using System.Threading;

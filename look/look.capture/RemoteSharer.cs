@@ -7,19 +7,21 @@
     using System.Threading;
 
     using look.capture.Helper;
+    using look.common.Command;
+    using look.common.Helper;
     using look.communication;
     using look.communication.Clients;
-    using look.communication.Helper.Command;
-    using look.utils;
 
     public class RemoteSharer : IDisposable
     {
-        private static readonly ScreenCapture capture = new ScreenCapture();
+        private readonly ScreenCapture capture = new ScreenCapture();
         private readonly ViewServiceClient proxy;
         private Thread threadCursor;
         private Thread threadScreen;
         private bool running;
         private int _numByteFullScreen = 1;
+        private readonly Guid id = Guid.NewGuid();
+        private IntPtr handle;
 
         private string host;
 
@@ -28,8 +30,8 @@
             this.proxy = RemoteContext.Instance.GetProxy(host);
         }
 
-        public void Start()
-        {
+        public void Start(IntPtr h) {
+            this.handle = h;
             this.running = true;
 
             this.threadScreen = new Thread(this.ScreenThread);
@@ -59,7 +61,7 @@
                 try
                 {
                     // Capture a bitmap of the changed pixels.
-                    Bitmap image = capture.Screen(ref bounds);
+                    Bitmap image = capture.Screen(ref bounds, this.handle);
                     if (this._numByteFullScreen == 1)
                     {
                         // Initialize the screen size (used for performance metrics)
@@ -69,7 +71,7 @@
                     if (bounds != Rectangle.Empty && image != null)
                     {
                         // We have data...pack it and send it.
-                        byte[] data = Utils.PackScreenCaptureData(image, bounds);
+                        byte[] data = Utils.PackScreenCaptureData(this.id, image, bounds);
                         if (data != null)
                         {
                             // Thread safety on the proxy.
@@ -121,7 +123,7 @@
                     if (image != null)
                     {
                         // We have valid data...pack and push it.
-                        var data = Utils.PackCursorCaptureData(image, cursorX, cursorY);
+                        var data = Utils.PackCursorCaptureData(this.id, image, cursorX, cursorY);
                         if (data != null)
                         {
                             try
