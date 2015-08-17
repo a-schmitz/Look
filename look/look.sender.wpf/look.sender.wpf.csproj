@@ -48,6 +48,10 @@
       <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ReactiveUI, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\reactiveui-core.6.5.0\lib\Net45\ReactiveUI.dll</HintPath>
       <Private>True</Private>
@@ -97,14 +101,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="helper\BooleanConvertHint.cs" />
+    <Compile Include="helper\BooleanToVisibilityConverter.cs" />
     <Compile Include="Interfaces\IHomeViewModel.cs" />
-    <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="Interfaces\IMainViewModel.cs" />
     <Compile Include="Interfaces\ITabViewModel.cs" />
     <Compile Include="Models\Favorite.cs" />
     <Compile Include="Models\ShareableWindow.cs" />
     <Compile Include="Interfaces\IWindowService.cs" />
     <Compile Include="Models\RemoteHostShareableWindow.cs" />
     <Compile Include="Services\FavoritesService.cs" />
+    <Compile Include="Services\NetworkServices.cs" />
     <Compile Include="Services\WindowService.cs" />
     <Compile Include="Models\RemoteHost.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
@@ -193,14 +201,20 @@
     <Resource Include="Resources\VisualStudio.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\look.common\look.common.csproj">
+      <Project>{31cc868e-3b3c-498b-95e1-c847283ccaf1}</Project>
+      <Name>look.common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\look.communication\look.communication.csproj">
+      <Project>{53f23269-df01-495e-b5f3-7ea61fa9254a}</Project>
+      <Name>look.communication</Name>
+    </ProjectReference>
     <ProjectReference Include="..\look.sender.wpf.controls\look.sender.wpf.controls.csproj">
       <Project>{2f1336d7-e52f-406e-b686-f8b03f778341}</Project>
       <Name>look.sender.wpf.controls</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="helper\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -44,17 +44,17 @@ namespace look.sender.wpf.Services
                     new ShareableWindow() {
                         Handle = p.MainWindowHandle, 
                         ProcessName = p.ProcessName, 
-                        Title = p.MainWindowTitle, 
-                        ProcessPath = p.MainModule.FileName, 
-                        Application = p.MainModule.FileVersionInfo.ProductName
+                        Title = p.MainWindowTitle
+                       // ProcessPath = p.MainModule.FileName, 
+                       // Application = p.MainModule.FileVersionInfo.ProductName
                     }).ToList();
 
-            list.ForEach(
-                p => {
-                    using (var sysicon = Icon.ExtractAssociatedIcon(p.ProcessPath))
-                        if (sysicon != null)
-                            p.Icon = Imaging.CreateBitmapSourceFromHIcon(sysicon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                });
+            //list.ForEach(
+            //    p => {
+            //        using (var sysicon = Icon.ExtractAssociatedIcon(p.ProcessPath))
+            //            if (sysicon != null)
+            //                p.Icon = Imaging.CreateBitmapSourceFromHIcon(sysicon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            //    });
 
             return list;
         }

@@ -12,13 +12,15 @@ namespace look.sender.wpf.ViewModels
     #region
 
     using System;
-    using System.Diagnostics;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Reactive.Concurrency;
     using System.Reactive.Disposables;
-    using System.Windows.Threading;
+    using System.Windows;
 
     using DynamicData;
 
+    using look.communication;
     using look.sender.wpf.Interfaces;
     using look.sender.wpf.Models;
     using look.sender.wpf.Services;
@@ -34,15 +36,7 @@ namespace look.sender.wpf.ViewModels
     {
         #region Fields
 
-        /// <summary>
-        /// The cleanup.
-        /// </summary>
-        private IDisposable cleanup;
-
-        /// <summary>
-        ///     The refresh timer.
-        /// </summary>
-        private DispatcherTimer refreshTimer;
+        private string quickAddInput;
 
         /// <summary>
         ///     The favorites.
@@ -64,28 +58,63 @@ namespace look.sender.wpf.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HomeViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="HomeViewModel" /> class.
         /// </summary>
         /// <param name="screen">
-        /// The screen.
+        ///     The screen context
         /// </param>
-        public HomeViewModel(IScreen screen) {
+        public HomeViewModel(IMainViewModel screen) {
+            
+            Application.Current.Exit += this.Current_Exit;
+
             this.HostScreen = screen;
 
             // TODO: add DI
             this.WindowService = new WindowService();
-
+            
             this.WhenNavigatedTo(this.InitViewModel);
         }
 
         #endregion
 
         #region Public Properties
+        /// <summary>
+        /// List of discovered hosts. Property is just a proxy for the real implementation in MainWindow 
+        /// </summary>
+        public IReactiveList<common.Model.RemoteHost> DiscoveredHosts { get { return ((IMainViewModel)this.HostScreen).DiscoveredHosts; } }
 
         /// <summary>
-        ///     Gets the host screen.
+        /// Discovery Command object
+        /// </summary>
+        public ReactiveCommand<IEnumerable<common.Model.RemoteHost>> DiscoveryCommand { get; protected set; }
+
+        /// <summary>
+        /// Delete favorite Command object
+        /// </summary>
+        public ReactiveCommand<object> FavoriteDeleteCommand { get; protected set; }
+
+        /// <summary>
+        ///     Reference to parent screen object (MainWindow)
         /// </summary>
         public IScreen HostScreen { get; private set; }
+
+        /// <summary>
+        /// Indicator that discovery is running. Property is just a proxy for the real implementation in MainWindow 
+        /// </summary>
+        public bool IsDiscoveryLoading {
+            get { return ((IMainViewModel)this.HostScreen).IsDiscoveryLoading; }
+            set { ((IMainViewModel)this.HostScreen).IsDiscoveryLoading = value; }
+        }
+
+        /// <summary>
+        /// Quick Add Command object
+        /// </summary>
+        public ReactiveCommand<object> QuickAddCommand { get; protected set; }
+
+        /// <summary>
+        /// Text of QuickAdd Inputbox
+        /// </summary>
+        public string QuickAddInput { get { return this.quickAddInput; } set { this.RaiseAndSetIfChanged(ref this.quickAddInput, value); } }
 
         /// <summary>
         ///     Gets or sets the favorites.
@@ -128,46 +157,100 @@ namespace look.sender.wpf.ViewModels
         #endregion
 
         #region Methods
-        
+
         /// <summary>
-        ///     The init view model.
+        ///     create new remotehost instance
+        /// </summary>
+        /// <param name="name">Hostname</param>
+        /// <param name="ip">IPAddress</param>
+        /// <returns></returns>
+        private RemoteHost CreateRemoteHost(string name, string ip) {
+            if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(ip))
+                throw new ArgumentException("Please enter either IPAddress or Hostname!");
+
+            // create new remotehost
+            var rh = new RemoteHost { IpAddress = ip, Name = name };
+
+            // add some information if missing
+            var ns = new NetworkServices();
+            if (string.IsNullOrEmpty(name))
+                rh.Name = ns.GetHostnameByIp(ip);
+            else if (string.IsNullOrEmpty(ip)) // in case of quickadd, any input will be provided in name attribute, so we have to check for ip or name
+                if (ns.IsValidIpAddress(name)) {
+                    rh.IpAddress = name;
+                    rh.Name = ns.GetHostnameByIp(rh.IpAddress);
+                } else
+                    rh.IpAddress = ns.GetIpByHostname(name);
+
+            rh.Name = rh.Name.ToUpper();
+
+            // add first tab for "my shares"
+            rh.Tabs.Add(new SharedWindowsViewModel(this.HostScreen, rh, this.ShareableWindows.AsObservableCache(), "My Shares"));
+
+            return rh;
+        }
+
+        /// <summary>
+        ///     persist favorites when application is shutdown
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Current_Exit(object sender, ExitEventArgs e) {
+            var favService = new FavoritesService();
+            favService.UpdateFavorites(this.RemoteHosts.Select(x => new Favorite() { Ip = x.IpAddress, Name = x.Name }));
+        }
+
+        /// <summary>
+        ///     Init command objects
+        /// </summary>
+        private void InitCommands() {
+            // init command for adding new favorites from quickadd box
+            this.QuickAddCommand = ReactiveCommand.Create(this.WhenAny(x => x.QuickAddInput, x => !string.IsNullOrEmpty(x.Value)));
+            this.QuickAddCommand.Subscribe(
+                _ => {
+                    this.RemoteHosts.Add(this.CreateRemoteHost(this.QuickAddInput, null));
+                    this.QuickAddInput = string.Empty;
+                });
+
+            // init command for deleting favorites
+            this.FavoriteDeleteCommand = ReactiveCommand.Create(this.WhenAny(x => x.SelectedRemoteHost, x => x != null));
+            this.FavoriteDeleteCommand.Subscribe(_ => this.RemoteHosts.Remove(this.SelectedRemoteHost));
+
+            // init command for starting client discovery
+            this.DiscoveryCommand = ReactiveCommand.CreateAsyncTask(
+                x => {
+                    this.IsDiscoveryLoading = true;
+                    return RemoteContext.Instance.FindClientsAsync();
+                });
+            this.DiscoveryCommand.Subscribe(
+                x => {
+                    this.IsDiscoveryLoading = false;
+                    this.DiscoveredHosts.AddRange(x);
+                });
+        }
+
+        /// <summary>
+        ///     Initialize our ViewModel
         /// </summary>
         /// <returns>
         ///     The <see cref="IDisposable" />.
         /// </returns>
         private IDisposable InitViewModel() {
-            // this.ShareableWindows = new ReactiveList<ShareableWindow>() { ChangeTrackingEnabled = true };
+            // init command objects
+            this.InitCommands();
 
+            // init collection that contains our own shareable windows; content is created by refresh Task afterwards
             this.ShareableWindows = new SourceCache<ShareableWindow, IntPtr>(w => w.Handle);
 
-            // TODO: loading Favorites from file
-            this.RemoteHosts = new ReactiveList<RemoteHost> {
-                new RemoteHost() { Name = "HAN07WST12345", IpAddress = "192.168.150.1" }, 
-                new RemoteHost() { Name = "HAN07WST54321", IpAddress = "192.168.150.10" }, 
-                new RemoteHost() { Name = "HAN07WST23321", IpAddress = "192.168.150.100" }
-            };
-
-            foreach (var f in this.RemoteHosts)
-                f.Tabs.Add(new SharedWindowsViewModel(this.HostScreen, this.RemoteHosts[0], this.ShareableWindows.AsObservableCache(), "My Shares"));
-
-            //var f2 = new FavoritesService();
-            //f2.UpdateFavorites(this.RemoteHosts.Select(x => new Favorite() { Ip = x.IpAddress, Name = x.Name }));
-
-            // this.RemoteHosts[0].Tabs.Add(new RemoteViewerViewModel(this.HostScreen, this.RemoteHosts[0], "Test1"));
-            // this.RemoteHosts[0].Tabs.Add(new RemoteViewerViewModel(this.HostScreen, this.RemoteHosts[0], "Test2"));
+            // get favorites and init list of RemoteHosts
+            var favService = new FavoritesService();
+            var favs = favService.GetFavorites();
+            this.RemoteHosts = new ReactiveList<RemoteHost>(favs.Select(x => this.CreateRemoteHost(x.Name, x.Ip)));
 
             // start refresh timer for collecting shareable windows
-            this.refreshTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 1) };
-            this.refreshTimer.Tick += this.refreshTimer_Tick;
-            this.refreshTimer.Start();
+            var timer = TaskPoolScheduler.Default.SchedulePeriodic(TimeSpan.FromSeconds(1), this.RefreshShareableWindows);
 
-            // select first host and select first tab
-            this.SelectedRemoteHost = this.RemoteHosts[0];
-            this.SelectedRemoteHost.SelectedViewModel = this.SelectedRemoteHost.Tabs[0];
-
-            this.cleanup = new CompositeDisposable(this.ShareableWindows);
-
-            return Disposable.Create(this.Shutdown);
+            return new CompositeDisposable(timer, this.ShareableWindows);
         }
 
         /// <summary>
@@ -179,35 +262,6 @@ namespace look.sender.wpf.ViewModels
             this.ShareableWindows.RemoveKeys(this.ShareableWindows.Items.Where(ws => windows.All(w => w.Handle != ws.Handle)).Select(x => x.Handle));
         }
 
-        /// <summary>
-        ///     The shutdown.
-        /// </summary>
-        private void Shutdown() {
-            this.refreshTimer.Stop();
-
-            this.cleanup.Dispose();
-
-            Debug.WriteLine("Shutdown.");
-        }
-
-        /// <summary>
-        /// The refresh timer_ tick.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        private void refreshTimer_Tick(object sender, EventArgs e) {
-            this.refreshTimer.Stop();
-
-            this.RefreshShareableWindows();
-
-            this.refreshTimer.Start();
-        }
-
         #endregion
     }
-
-}
+} ;

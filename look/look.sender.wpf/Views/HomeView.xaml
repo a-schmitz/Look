@@ -34,7 +34,7 @@
             <!--Header-->
             <Border Grid.Column="0" BorderBrush="White" BorderThickness="0,0,0,1">
                 <StackPanel Orientation="Horizontal">
-                    <Button Width="24" Height="24" Margin="5,0,0,0"
+                    <Button Width="24" Height="24" Margin="5,0,0,0" Command="{Binding DiscoveryCommand}"
                             VerticalAlignment="Center" Background="{StaticResource GradientDark}" Click="Button_Click">
                         <Rectangle Width="12" Height="12">
                             <Rectangle.Fill>
@@ -58,9 +58,13 @@
                 <Border Height="30" Margin="8,0,9,0" Background="{StaticResource GradientDark}" BorderThickness="1"
                         BorderBrush="White" CornerRadius="5">
                     <TextBox Width="179" controls1:TextBoxHelper.Watermark="Quickadd" FontSize="14" BorderThickness="0"
-                             Background="{x:Null}" />
+                             Background="{x:Null}" Text="{Binding QuickAddInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding QuickAddCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
                 </Border>
-                <Button Width="30" Height="30" Background="{StaticResource GradientDark}">
+                <Button Width="30" Height="30" Background="{StaticResource GradientDark}" Command="{Binding QuickAddCommand}">
                     <Rectangle Width="15" Height="15">
                         <Rectangle.Fill>
                             <VisualBrush Visual="{StaticResource appbar_add}" />
@@ -74,9 +78,51 @@
                       BorderThickness="0,0,0,0" ItemsSource="{Binding RemoteHosts}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <controls:FavoriteItem Title="{Binding Name}" Margin="5,0" SubTitle="{Binding IpAddress}" />
+                        <controls:FavoriteItem Title="{Binding Name}" Margin="5,0" SubTitle="{Binding IpAddress}" IsConnectorVisible="True" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Rename" Command="{Binding FavoriteDeleteCommand}">
+                            <MenuItem.Icon>
+                                <Rectangle Width="15" Height="15">
+                                    <Rectangle.Fill>
+                                        <VisualBrush Visual="{StaticResource appbar_edit}" />
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="Delete" Command="{Binding FavoriteDeleteCommand}">
+                            <MenuItem.Icon>
+                                <Rectangle Width="15" Height="15">
+                                    <Rectangle.Fill>
+                                        <VisualBrush Visual="{StaticResource appbar_monitor_delete}" />
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="Connect" Command="{Binding FavoriteDeleteCommand}">
+                            <MenuItem.Icon>
+                                <Rectangle Width="15" Height="15">
+                                    <Rectangle.Fill>
+                                        <VisualBrush Visual="{StaticResource appbar_disconnect}" />
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Disconnect" Command="{Binding FavoriteDeleteCommand}">
+                            <MenuItem.Icon>
+                                <Rectangle Width="15" Height="15">
+                                    <Rectangle.Fill>
+                                        <VisualBrush Visual="{StaticResource appbar_connect}" />
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListView.ContextMenu>
             </ListView>
 
             <!--Favorites Tabs-->
@@ -97,18 +143,7 @@
                     <DataTemplate>
                         <TextBlock x:Name="HeaderTextBlock" Margin="10,0,0,0" FontSize="18" Text="{Binding Header}" />
                     </DataTemplate>
-                    <!--<DataTemplate.Triggers>
-
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}},Path=IsSelected}" Value="True">
-                                <Setter TargetName="HeaderTextBlock" Property="Foreground" Value="White" />
-                            </DataTrigger>
-
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}},Path=IsSelected}" Value="False">
-                                <Setter TargetName="HeaderTextBlock" Property="Foreground" Value="Gray" />
-                            </DataTrigger>
-                            
-                        </DataTemplate.Triggers>-->
-
+                  
                 </TabControl.ItemTemplate>
 
             </TabControl>

@@ -89,11 +89,11 @@ namespace look.sender.wpf.Views
         /// The e.
         /// </param>
         private void Button_Click(object sender, RoutedEventArgs e) {
-            // very ugly, but currently no better idea how to solve it as MahApps only supports flyouts in MetroWindows not UserControls
-            var parentWindow = Window.GetWindow(this);
-            var obj = parentWindow.FindName("DiscoveryFlyout");
-            var flyout = (Flyout)obj;
-            flyout.IsOpen = !flyout.IsOpen;
+            //// very ugly, but currently no better idea how to solve it as MahApps only supports flyouts in MetroWindows not UserControls
+            //var parentWindow = Window.GetWindow(this);
+            //var obj = parentWindow.FindName("DiscoveryFlyout");
+            //var flyout = (Flyout)obj;
+            //flyout.IsOpen = !flyout.IsOpen;
         }
 
         #endregion

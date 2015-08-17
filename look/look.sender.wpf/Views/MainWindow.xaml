@@ -1,48 +1,60 @@
 ﻿<controls:MetroWindow x:Class="look.sender.wpf.Views.MainWindow"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:rx="clr-namespace:ReactiveUI;assembly=ReactiveUI"
-        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-        xmlns:controls1="clr-namespace:look.sender.wpf.controls;assembly=look.sender.wpf.controls"
-        Title="MainWindow" Height="500" Width="1060">
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:rx="clr-namespace:ReactiveUI;assembly=ReactiveUI"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:controls1="clr-namespace:look.sender.wpf.controls;assembly=look.sender.wpf.controls"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:viewModels="clr-namespace:look.sender.wpf.ViewModels"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:wpf="clr-namespace:look.sender.wpf"
+                      xmlns:helper="clr-namespace:look.sender.wpf.helper"
+                      Title="MainWindow"
+                      Width="1060"
+                      Height="500" mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel, IsDesignTimeCreatable=False}">
+
+
+    <controls:MetroWindow.Resources>
+        <helper:BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+    </controls:MetroWindow.Resources>
+    
     <Grid>
 
-        <rx:RoutedViewHost 
-            Router="{Binding Router}"
+        <rx:RoutedViewHost
             HorizontalContentAlignment="Stretch"
-            VerticalContentAlignment="Stretch" />
+            VerticalContentAlignment="Stretch"
+            Router="{Binding Router}" />
 
-        <controls:FlyoutsControl x:Name="flyoutsControl"  >
-            <controls:Flyout x:Name="DiscoveryFlyout"
+        <controls:FlyoutsControl x:Name="flyoutsControl">
+            <controls:Flyout x:Name="DiscoveryFlyout" Width="300"
+                             IsOpen="{Binding IsDiscoveryVisible}"
                              AreAnimationsEnabled="True"
-                             Width="300"
                              Header="Host Discovery"
                              Position="Left">
-                <Grid Margin="10">
+                <Grid Margin="20">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
+                    <controls:MetroProgressBar Grid.Row="0" IsIndeterminate="True" Visibility="{Binding Path=IsDiscoveryLoading, Converter={StaticResource BoolToVisibility}}"></controls:MetroProgressBar>
 
-                    <ListView BorderThickness="0,0,0,0">
+                    <Label Grid.Row="0" FontSize="16" HorizontalAlignment="Center" Content="No host found!" Visibility="{Binding Path=IsDiscoveryListEmpty, Converter={StaticResource BoolToVisibility}}"></Label>
+
+                    <ListView Grid.Row="1" BorderThickness="0,0,0,0" ItemsSource="{Binding DiscoveredHosts}" Visibility="{Binding Path=IsDiscoveryListEmpty, 
+                        ConverterParameter={x:Static helper:BooleanConvertHint.Inverse}, Converter={StaticResource BoolToVisibility}}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <controls1:FavoriteItem Margin="5,0" ></controls1:FavoriteItem>
+                                <controls1:FavoriteItem Title="{Binding Name}" Margin="5,0" SubTitle="{Binding Ip}"
+                                                        IsConnectorVisible="False" />
                             </DataTemplate>
                         </ListView.ItemTemplate>
-                        <ListItem/>
-                        <ListItem/>
-                        <ListItem/>
-                        <ListItem/>
-                        <ListItem/>
-                        <ListItem/>
                     </ListView>
 
                 </Grid>
             </controls:Flyout>
         </controls:FlyoutsControl>
-        
+
     </Grid>
 </controls:MetroWindow>

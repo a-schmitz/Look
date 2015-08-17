@@ -7,6 +7,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="300">
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
     
     <Border x:Name="LayoutRoot" BorderBrush="#FF303030" BorderThickness="1,1,1,1" Margin="2">
 
@@ -60,7 +63,7 @@
             </Rectangle>
 
             <Border x:Name="BorderConnect" Height="30" Width="30" Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" BorderThickness="1" CornerRadius="5" 
-                    BorderBrush="#FFBBB6B6" MouseUp="borderConnect_MouseUp"  Background="Transparent">
+                    BorderBrush="#FFBBB6B6" MouseUp="borderConnect_MouseUp"  Background="Transparent" Visibility="{Binding Path=IsConnectorVisible, Converter={StaticResource BoolToVis}}">
                 <Rectangle Width="16" Height="16" x:Name="StatusConnected">
                     <Rectangle.Fill>
                         <VisualBrush Visual="{StaticResource appbar_connect}" />

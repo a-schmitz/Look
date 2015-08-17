@@ -26,6 +26,11 @@ namespace look.sender.wpf.controls
     {
         #region Static Fields
 
+        public static readonly DependencyProperty IsConnectorVisibleProperty = DependencyProperty.Register("IsConnectorVisible", typeof(bool), typeof(FavoriteItem), new PropertyMetadata(default(bool)));
+
+        public bool IsConnectorVisible { get { return (bool)GetValue(IsConnectorVisibleProperty); } set { SetValue(IsConnectorVisibleProperty, value); } }
+
+
         /// <summary>
         ///     The connected property.
         /// </summary>

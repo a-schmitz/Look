@@ -30,8 +30,8 @@ namespace look.sender.wpf.Views
         public MainWindow() {
             this.InitializeComponent();
 
-            this.AppBootstrapper = new AppBootstrapper();
-            this.DataContext = this.AppBootstrapper;
+            this.MainWindowViewModel = new MainWindowViewModel();
+            this.DataContext = this.MainWindowViewModel;
         }
 
         #endregion
@@ -41,7 +41,7 @@ namespace look.sender.wpf.Views
         /// <summary>
         ///     Gets or sets the app bootstrapper.
         /// </summary>
-        public AppBootstrapper AppBootstrapper { get; protected set; }
+        public MainWindowViewModel MainWindowViewModel { get; protected set; }
 
         #endregion
     }

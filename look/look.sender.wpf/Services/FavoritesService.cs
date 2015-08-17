@@ -18,6 +18,8 @@ namespace look.sender.wpf.Services
 
     using look.sender.wpf.Models;
 
+    using Newtonsoft.Json;
+
     #endregion
 
     /// <summary>
@@ -30,7 +32,7 @@ namespace look.sender.wpf.Services
         /// <summary>
         /// The file name.
         /// </summary>
-        private readonly string fileName = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\favorites.xml";
+        private readonly string fileName = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\.look.favorites";
 
         #endregion
 
@@ -75,11 +77,9 @@ namespace look.sender.wpf.Services
             if (!File.Exists(fileName))
                 return new List<Favorite>();
 
-            using (var stream = new FileStream(fileName, FileMode.Open))
-            {
-                var xmlSerializer = new XmlSerializer(typeof(Favorite));
-                return xmlSerializer.Deserialize(stream) as List<Favorite>;
-
+            using (var stream = new StreamReader(fileName)) {
+                var hosts = JsonConvert.DeserializeObject<IEnumerable<Favorite>>(stream.ReadToEnd());
+                return hosts;
             }
         }
 
@@ -93,10 +93,10 @@ namespace look.sender.wpf.Services
         /// The hosts.
         /// </param>
         private void saveFavoritesToFile(string fileName, IEnumerable<Favorite> hosts) {
-            using (var stream = new FileStream(fileName, FileMode.CreateNew)) {
-                var xmlSerializer = new XmlSerializer(typeof(Favorite));
-
-                xmlSerializer.Serialize(stream, hosts);
+            using (var stream = new StreamWriter(fileName, false)) {
+                
+                 stream.WriteLine(JsonConvert.SerializeObject(hosts));
+                
             }
         }
 
