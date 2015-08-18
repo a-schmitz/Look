@@ -30,7 +30,7 @@
                 return false;
 
             var e = new HostConnectedEventArgs { Ip = ip };
-            this.RaiseOnHostConnected(e);
+            this.OnHostConnected(e);
 
             return e.Accepted;
         }
@@ -38,12 +38,12 @@
         public void Disconnect()
         {
             var e = new HostDisconnectedEventArgs { Ip = this.GetIp() };
-            this.RaiseOnHostDisconnected(e);
+            this.OnHostDisconnected(e);
         }
 
         public void PushAvailableWindows(List<Window> windows) {
             var e = new WindowsSharedEventArgs { Ip = this.GetIp(), Windows = windows };
-            this.RaiseOnWindowsShared(e);
+            this.OnWindowsShared(e);
         }
 
         public void PushScreenUpdate(byte[] data)
@@ -104,25 +104,25 @@
         public void RequestWindowTransfer(List<Window> windows)
         {
             var e = new WindowsRequestedEventArgs { Ip = this.GetIp(), Windows = windows };
-            this.RaiseOnWindowsRequested(e);
+            this.OnWindowsRequested(e);
         }
 
         #region Events
 
         public delegate void HostConnectedHandler(object sender, HostConnectedEventArgs e);
-        public static event HostConnectedHandler OnHostConnected;
+        public static event HostConnectedHandler HostConnected;
         
         public delegate void WindowsSharedHandler(object sender, WindowsSharedEventArgs e);
-        public static event WindowsSharedHandler OnWindowsShared;
+        public static event WindowsSharedHandler WindowsShared;
 
         public delegate void WindowsRequestedHandler(object sender, WindowsRequestedEventArgs e);
-        public static event WindowsRequestedHandler OnWindowsRequested;
+        public static event WindowsRequestedHandler WindowsRequested;
 
-        public delegate void ImageChangeHandler(Image display, string id, string ip);
-        public static event ImageChangeHandler OnImageChange;
+        public delegate void ImageChangedHandler(Image display, string id, string ip);
+        public static event ImageChangedHandler ImageChanged;
 
         public delegate void HostDisconnectedHandler(object sender, HostDisconnectedEventArgs e);
-        public static event HostDisconnectedHandler OnHostDisconnected;
+        public static event HostDisconnectedHandler HostDisconnected;
 
         #endregion
 
@@ -150,42 +150,42 @@
                 viewSession.Display = viewSession.Screen;
             }
 
-            if (OnImageChange != null)
+            if (ImageChanged != null)
             {
-                OnImageChange(viewSession.Display, viewSession.Id.ToString(), viewSession.Ip);
+                ImageChanged(viewSession.Display, viewSession.Id.ToString(), viewSession.Ip);
             }
         }
 
 
-        private void RaiseOnHostConnected(HostConnectedEventArgs e)
+        private void OnHostConnected(HostConnectedEventArgs e)
         {
-            if (OnHostConnected != null)
+            if (HostConnected != null)
             {
-                OnHostConnected(this, e);
+                HostConnected(this, e);
             }
         }
 
-        private void RaiseOnWindowsShared(WindowsSharedEventArgs e)
+        private void OnWindowsShared(WindowsSharedEventArgs e)
         {
-            if (OnWindowsShared != null)
+            if (WindowsShared != null)
             {
-                OnWindowsShared(this, e);
+                WindowsShared(this, e);
             }
         }
 
-        private void RaiseOnWindowsRequested(WindowsRequestedEventArgs e)
+        private void OnWindowsRequested(WindowsRequestedEventArgs e)
         {
-            if (OnWindowsRequested != null)
+            if (WindowsRequested != null)
             {
-                OnWindowsRequested(this, e);
+                WindowsRequested(this, e);
             }
         }
 
-        private void RaiseOnHostDisconnected(HostDisconnectedEventArgs e)
+        private void OnHostDisconnected(HostDisconnectedEventArgs e)
         {
-            if (OnHostDisconnected != null)
+            if (HostDisconnected != null)
             {
-                OnHostDisconnected(this, e);
+                HostDisconnected(this, e);
             }
         }
     }

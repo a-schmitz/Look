@@ -68,11 +68,11 @@
         public delegate void ScreenUpdateHandler(object sender, ScreenUpdateEventArgs e);
         public delegate void HostDisconnectedHandler(object sender, HostDisconnectedEventArgs e);
 
-        public event HostConnectedHandler OnHostConnected;
-        public event WindowsSharedHandler OnWindowsShared;
-        public event WindowsRequestedHandler OnWindowsRequested;
-        public event ScreenUpdateHandler OnScreenUpdateReceived;
-        public event HostDisconnectedHandler OnHostDisconnected;
+        public event HostConnectedHandler HostConnected;
+        public event WindowsSharedHandler WindowsShared;
+        public event WindowsRequestedHandler WindowsRequested;
+        public event ScreenUpdateHandler ScreenUpdateReceived;
+        public event HostDisconnectedHandler HostDisconnected;
 
         #endregion
 
@@ -83,11 +83,11 @@
                 return;
 
             this.serviceHost.Start<ViewService>(name);
-            ViewService.OnHostConnected += this.ViewServiceOnOnHostConnected;
-            ViewService.OnWindowsShared += this.ViewServiceOnOnWindowsShared;
-            ViewService.OnWindowsRequested += this.ViewServiceOnOnWindowsRequested;
-            ViewService.OnImageChange += this.ViewServiceOnOnImageChange;
-            ViewService.OnHostDisconnected += this.ViewServiceOnOnHostDisconnected;
+            ViewService.HostConnected += this.ViewServiceHostConnected;
+            ViewService.WindowsShared += this.ViewServiceWindowsShared;
+            ViewService.WindowsRequested += this.ViewServiceWindowsRequested;
+            ViewService.ImageChanged += this.ViewServiceImageChanged;
+            ViewService.HostDisconnected += this.ViewServiceHostDisconnected;
 
             this.acceptingConnections = true;
         }        
@@ -97,11 +97,11 @@
                 return;
 
             this.serviceHost.Stop();
-            ViewService.OnHostConnected -= this.ViewServiceOnOnHostConnected;
-            ViewService.OnWindowsShared -= this.ViewServiceOnOnWindowsShared;
-            ViewService.OnWindowsRequested -= this.ViewServiceOnOnWindowsRequested;
-            ViewService.OnImageChange -= this.ViewServiceOnOnImageChange;
-            ViewService.OnHostDisconnected -= this.ViewServiceOnOnHostDisconnected;
+            ViewService.HostConnected -= this.ViewServiceHostConnected;
+            ViewService.WindowsShared -= this.ViewServiceWindowsShared;
+            ViewService.WindowsRequested -= this.ViewServiceWindowsRequested;
+            ViewService.ImageChanged -= this.ViewServiceImageChanged;
+            ViewService.HostDisconnected -= this.ViewServiceHostDisconnected;
 
             this.acceptingConnections = false;
         }
@@ -112,8 +112,10 @@
 
         public IEnumerable<RemoteHost> FindClients()
         {
-            using (var client = new ViewServiceClient()) {
-                foreach (var endpoint in client.Discover()) {
+            using (var client = new ViewServiceClient())
+            {
+                foreach (var endpoint in client.Discover())
+                {
 #if !DEBUG
                     if (!endpoint.Address.IsLoopback) // enable local testing
 #endif
@@ -130,7 +132,7 @@
                 foreach (var endpoint in await client.DiscoverAsync())
                 {
 #if !DEBUG
-                    if (!endpoint.Address.IsLoopback) // enable local testing
+                    if (!endpoint.Address.Uri.IsLoopback) // enable local testing
 #endif
                     hosts.Add(new RemoteHost { Ip = IpHelper.GetIp(endpoint.Address.Uri.Host), Name = endpoint.Name });
                 }
@@ -156,10 +158,14 @@
         }
 
         public bool Connect(string hostOrIp) {
+            return this.ConnectAsync(hostOrIp).Result;
+        }
+
+        public async Task<bool> ConnectAsync(string hostOrIp) {
             var address = new EndpointAddress(string.Format(ViewServiceHost.BASE_ADDRESS, IpHelper.GetIp(hostOrIp), ViewServiceHost.PORT));
             var endpoint = new SharingEndpoint("<quickadd>", address);
 
-            return this.ConnectAsync(endpoint).Result;
+            return await this.ConnectAsync(endpoint);
         }
 
         public void Disconnect(string hostOrIp)
@@ -181,59 +187,63 @@
             var proxy = this.GetProxy(hostOrIp);
             proxy.RequestWindowTransfer(windows);
         }
-        
+
+        public bool IsConnected(string hostOrIp) {
+            return this.connectedHosts.ContainsKey(IpHelper.GetIp(hostOrIp));
+        }
+
         #endregion
 
         #region Private Methods
 
-        private void RaiseOnHostConnected(HostConnectedEventArgs e)
+        private void OnHostConnected(HostConnectedEventArgs e)
         {
-            if (this.OnHostConnected != null)
+            if (this.HostConnected != null)
             {
-                this.OnHostConnected(this, e);
+                this.HostConnected(this, e);
             }
         }
 
-        private void RaiseOnWindowsShared(WindowsSharedEventArgs e)
+        private void OnWindowsShared(WindowsSharedEventArgs e)
         {
-            if (this.OnWindowsShared != null)
+            if (this.WindowsShared != null)
             {
-                this.OnWindowsShared(this, e);
+                this.WindowsShared(this, e);
             }
         }
 
-        private void RaiseOnWindowsRequested(WindowsRequestedEventArgs e)
+        private void OnWindowsRequested(WindowsRequestedEventArgs e)
         {
-            if (this.OnWindowsRequested != null)
+            if (this.WindowsRequested != null)
             {
-                this.OnWindowsRequested(this, e);
+                this.WindowsRequested(this, e);
             }
         }
 
-        private void RaiseOnScreenUpdateReceived(ScreenUpdateEventArgs e)
+        private void OnScreenUpdateReceived(ScreenUpdateEventArgs e)
         {
-            if (this.OnScreenUpdateReceived != null)
+            if (this.ScreenUpdateReceived != null)
             {
-                this.OnScreenUpdateReceived(this, e);
+                this.ScreenUpdateReceived(this, e);
             }
         }
 
-        private void RaiseOnHostDisconnected(HostDisconnectedEventArgs e)
+        private void OnHostDisconnected(HostDisconnectedEventArgs e)
         {
-            if (this.OnHostDisconnected != null)
+            if (this.HostDisconnected != null)
             {
-                this.OnHostDisconnected(this, e);
+                this.HostDisconnected(this, e);
             }
         }
         
 
-        private void ViewServiceOnOnImageChange(Image display, string id, string ip) {
-            this.RaiseOnScreenUpdateReceived(new ScreenUpdateEventArgs { Ip = ip, WindowId = id, Screen = display });
+        private void ViewServiceImageChanged(Image display, string id, string ip) {
+            this.OnScreenUpdateReceived(new ScreenUpdateEventArgs { Ip = ip, WindowId = id, Screen = display });
         }
 
-        private void ViewServiceOnOnHostConnected(object sender, HostConnectedEventArgs e)
+        private void ViewServiceHostConnected(object sender, HostConnectedEventArgs e)
         {
-            this.RaiseOnHostConnected(e);
+            this.OnHostConnected(e);
             if (e.Accepted)
             {
                 var address = new EndpointAddress(string.Format(ViewServiceHost.BASE_ADDRESS, e.Ip, ViewServiceHost.PORT));
@@ -242,19 +252,19 @@
             }
         }
 
-        private void ViewServiceOnOnWindowsShared(object sender, WindowsSharedEventArgs e)
+        private void ViewServiceWindowsShared(object sender, WindowsSharedEventArgs e)
         {
-            this.RaiseOnWindowsShared(e);
+            this.OnWindowsShared(e);
         }
 
-        private void ViewServiceOnOnWindowsRequested(object sender, WindowsRequestedEventArgs e)
+        private void ViewServiceWindowsRequested(object sender, WindowsRequestedEventArgs e)
         {
-            this.RaiseOnWindowsRequested(e);
+            this.OnWindowsRequested(e);
         }
 
-        private void ViewServiceOnOnHostDisconnected(object sender, HostDisconnectedEventArgs e)
+        private void ViewServiceHostDisconnected(object sender, HostDisconnectedEventArgs e)
         {
-            this.RaiseOnHostDisconnected(e);
+            this.OnHostDisconnected(e);
             ViewServiceClient proxy;
             this.connectedHosts.TryRemove(IpHelper.GetIp(e.Ip), out proxy);
         }

@@ -28,11 +28,11 @@
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            RemoteContext.Instance.OnHostConnected += InstanceOnOnHostConnected;
-            RemoteContext.Instance.OnWindowsShared += InstanceOnOnWindowsShared;
-            RemoteContext.Instance.OnWindowsRequested += InstanceOnOnWindowsRequested;
-            RemoteContext.Instance.OnScreenUpdateReceived += RemoteContextOnOnScreenUpdateReceived;
-            RemoteContext.Instance.OnHostDisconnected += InstanceOnOnHostDisconnected;
+            RemoteContext.Instance.HostConnected += this.InstanceHostConnected;
+            RemoteContext.Instance.WindowsShared += this.InstanceWindowsShared;
+            RemoteContext.Instance.WindowsRequested += this.InstanceWindowsRequested;
+            RemoteContext.Instance.ScreenUpdateReceived += this.RemoteContextScreenUpdateReceived;
+            RemoteContext.Instance.HostDisconnected += this.InstanceHostDisconnected;
             RemoteContext.Instance.StartAcceptingConnections("Kekse");
 
             foreach (var host in RemoteContext.Instance.FindClients()) {
@@ -49,19 +49,19 @@
             }
         }
 
-        private void InstanceOnOnHostDisconnected(object sender, HostDisconnectedEventArgs e) {
+        private void InstanceHostDisconnected(object sender, HostDisconnectedEventArgs e) {
             share.Stop();
             MessageBox.Show(e.Ip + " disconnected", "Disconnect");
         }
 
-        private void InstanceOnOnWindowsRequested(object sender, WindowsRequestedEventArgs e) {
+        private void InstanceWindowsRequested(object sender, WindowsRequestedEventArgs e) {
             share = new RemoteSharer(e.Ip);
             var id = e.Windows.First().Id;
             var handle = windows.First(entry => entry.Item1 == id).Item3;
             share.Start(handle);
         }
 
-        private void InstanceOnOnWindowsShared(object sender, WindowsSharedEventArgs e) {
+        private void InstanceWindowsShared(object sender, WindowsSharedEventArgs e) {
             var result = MessageBox.Show(
                 string.Format("{0} shared: {1}", e.Ip, string.Join(", ", e.Windows.Select(w => w.Name))),
                 "Accept Sharing?",
@@ -73,7 +73,7 @@
             }
         }
 
-        private void InstanceOnOnHostConnected(object sender, HostConnectedEventArgs e) {
+        private void InstanceHostConnected(object sender, HostConnectedEventArgs e) {
             var result = MessageBox.Show(
                 string.Format("Confirm? ({0})", e.Ip),
                 "Connection Request",
@@ -83,7 +83,7 @@
             e.Accepted = result == DialogResult.Yes;
         }
 
-        private void RemoteContextOnOnScreenUpdateReceived(object sender, ScreenUpdateEventArgs e)
+        private void RemoteContextScreenUpdateReceived(object sender, ScreenUpdateEventArgs e)
         {
             UpdateImage(e.Screen);
         }
