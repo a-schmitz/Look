@@ -19,10 +19,14 @@ namespace look.sender.wpf.ViewModels
     using DynamicData;
     using DynamicData.Binding;
 
+    using look.common.Model;
+    using look.communication;
     using look.sender.wpf.Interfaces;
     using look.sender.wpf.Models;
 
     using ReactiveUI;
+
+    using RemoteHost = look.sender.wpf.Models.RemoteHost;
 
     #endregion
 
@@ -82,6 +86,18 @@ namespace look.sender.wpf.ViewModels
                     var w = new RemoteHostShareableWindow(window);
                     w.WhenPropertyChanged(shareableWindow => shareableWindow.IsShared).Subscribe(
                         shareableWindow => this.RaisePropertyChanged("Header"));
+
+                    w.WhenPropertyChanged(shareableWindow => shareableWindow.IsShared).Subscribe( x => {
+                        if (x.Value)
+                            RemoteContext.Instance.ShareWindows(
+                                remoteHost.Name,
+                                this.shareableWindows.Select(sw => new Window() { Id = sw.Handle.ToString(), Name = sw.ProcessName }).ToList());
+                    });
+
+                    //w.WhenAnyValue(x => x.IsShared).Where(x => x) 
+                    //    .Subscribe(x => RemoteContext.Instance.ShareWindows(
+                    //        remoteHost.Name, this.shareableWindows.Select(sw => new Window() { Id = sw.Handle.ToString(), Name = sw.ProcessName }).ToList()));
+
                     return w;
                 }).ObserveOnDispatcher().Bind(out this.shareableWindows).Subscribe();
 

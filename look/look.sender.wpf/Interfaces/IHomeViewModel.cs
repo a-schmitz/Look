@@ -43,6 +43,8 @@ namespace look.sender.wpf.Interfaces
         /// </summary>
         ISourceCache<ShareableWindow, IntPtr> ShareableWindows { get; set; }
 
+        ReactiveCommand<bool> ConnectCommand { get;}
+
         #endregion
     }
 

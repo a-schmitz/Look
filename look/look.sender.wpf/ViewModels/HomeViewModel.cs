@@ -12,7 +12,7 @@ namespace look.sender.wpf.ViewModels
     #region
 
     using System;
-    using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reactive.Concurrency;
     using System.Reactive.Disposables;
@@ -21,6 +21,7 @@ namespace look.sender.wpf.ViewModels
     using DynamicData;
 
     using look.communication;
+    using look.communication.Model;
     using look.sender.wpf.Interfaces;
     using look.sender.wpf.Models;
     using look.sender.wpf.Services;
@@ -64,55 +65,68 @@ namespace look.sender.wpf.ViewModels
         ///     The screen context
         /// </param>
         public HomeViewModel(IMainViewModel screen) {
-            
             Application.Current.Exit += this.Current_Exit;
 
             this.HostScreen = screen;
 
             // TODO: add DI
             this.WindowService = new WindowService();
-            
+
             this.WhenNavigatedTo(this.InitViewModel);
+
+            RemoteContext.Instance.HostConnected += Instance_HostConnected;
+            RemoteContext.Instance.WindowsShared += Instance_WindowsShared;
+            RemoteContext.Instance.WindowsRequested += Instance_WindowsRequested;
+            RemoteContext.Instance.HostDisconnected += Instance_HostDisconnected;
+
+        }
+
+        void Instance_HostDisconnected(object sender, common.Events.HostDisconnectedEventArgs e)
+        {
+            Debug.WriteLine(string.Format("Client Disconnected: {0}", e.Ip));
+        }
+
+        void Instance_WindowsRequested(object sender, common.Events.WindowsRequestedEventArgs e)
+        {
+            Debug.WriteLine(string.Format("Windows Requested: {0}", string.Join("\r\n", e.Windows.Select(x => x.Name).ToList())));
+        }
+
+        void Instance_WindowsShared(object sender, common.Events.WindowsSharedEventArgs e)
+        {
+            Debug.WriteLine(string.Format("Windows shared: {0}", string.Join("\r\n", e.Windows.Select(x => x.Name).ToList()) ));
+        }
+
+        void Instance_HostConnected(object sender, common.Events.HostConnectedEventArgs e)
+        {
+            Debug.WriteLine(string.Format("Client connected: {0}", e.Ip));
+            e.Accepted = true;
         }
 
         #endregion
 
         #region Public Properties
-        /// <summary>
-        /// List of discovered hosts. Property is just a proxy for the real implementation in MainWindow 
-        /// </summary>
-        public IReactiveList<common.Model.RemoteHost> DiscoveredHosts { get { return ((IMainViewModel)this.HostScreen).DiscoveredHosts; } }
 
         /// <summary>
-        /// Discovery Command object
-        /// </summary>
-        public ReactiveCommand<IEnumerable<common.Model.RemoteHost>> DiscoveryCommand { get; protected set; }
-
-        /// <summary>
-        /// Delete favorite Command object
+        ///     Delete favorite Command object
         /// </summary>
         public ReactiveCommand<object> FavoriteDeleteCommand { get; protected set; }
+
+        public ReactiveCommand<bool> ConnectCommand { get; protected set; }
 
         /// <summary>
         ///     Reference to parent screen object (MainWindow)
         /// </summary>
         public IScreen HostScreen { get; private set; }
 
-        /// <summary>
-        /// Indicator that discovery is running. Property is just a proxy for the real implementation in MainWindow 
-        /// </summary>
-        public bool IsDiscoveryLoading {
-            get { return ((IMainViewModel)this.HostScreen).IsDiscoveryLoading; }
-            set { ((IMainViewModel)this.HostScreen).IsDiscoveryLoading = value; }
-        }
+        public IMainViewModel MainViewModel { get { return ((IMainViewModel)this.HostScreen); } }
 
         /// <summary>
-        /// Quick Add Command object
+        ///     Quick Add Command object
         /// </summary>
         public ReactiveCommand<object> QuickAddCommand { get; protected set; }
 
         /// <summary>
-        /// Text of QuickAdd Inputbox
+        ///     Text of QuickAdd Inputbox
         /// </summary>
         public string QuickAddInput { get { return this.quickAddInput; } set { this.RaiseAndSetIfChanged(ref this.quickAddInput, value); } }
 
@@ -197,7 +211,9 @@ namespace look.sender.wpf.ViewModels
         /// <param name="e"></param>
         private void Current_Exit(object sender, ExitEventArgs e) {
             var favService = new FavoritesService();
-            favService.UpdateFavorites(this.RemoteHosts.Select(x => new Favorite() { Ip = x.IpAddress, Name = x.Name }));
+
+            if (this.RemoteHosts != null)
+                favService.UpdateFavorites(this.RemoteHosts.Select(x => new Favorite() { Ip = x.IpAddress, Name = x.Name }));
         }
 
         /// <summary>
@@ -205,7 +221,7 @@ namespace look.sender.wpf.ViewModels
         /// </summary>
         private void InitCommands() {
             // init command for adding new favorites from quickadd box
-            this.QuickAddCommand = ReactiveCommand.Create(this.WhenAny(x => x.QuickAddInput, x => !string.IsNullOrEmpty(x.Value)));
+            this.QuickAddCommand = ReactiveCommand.Create(this.WhenAny(viewmodel => viewmodel.QuickAddInput, x => !string.IsNullOrEmpty(x.Value)));
             this.QuickAddCommand.Subscribe(
                 _ => {
                     this.RemoteHosts.Add(this.CreateRemoteHost(this.QuickAddInput, null));
@@ -213,20 +229,24 @@ namespace look.sender.wpf.ViewModels
                 });
 
             // init command for deleting favorites
-            this.FavoriteDeleteCommand = ReactiveCommand.Create(this.WhenAny(x => x.SelectedRemoteHost, x => x != null));
+            this.FavoriteDeleteCommand = ReactiveCommand.Create(this.WhenAny(viewmodel => viewmodel.SelectedRemoteHost, x => x != null));
             this.FavoriteDeleteCommand.Subscribe(_ => this.RemoteHosts.Remove(this.SelectedRemoteHost));
 
-            // init command for starting client discovery
-            this.DiscoveryCommand = ReactiveCommand.CreateAsyncTask(
+            // subscribe to addhostcommand from mainviewmodel for adding new hosts from discovery
+            this.MainViewModel.AddHostCommand.Subscribe(
                 x => {
-                    this.IsDiscoveryLoading = true;
-                    return RemoteContext.Instance.FindClientsAsync();
+                    var rh = x as look.common.Model.RemoteHost;
+                    if (rh == null)
+                        return;
+                    this.RemoteHosts.Add(this.CreateRemoteHost(rh.Name, rh.Ip));
                 });
-            this.DiscoveryCommand.Subscribe(
-                x => {
-                    this.IsDiscoveryLoading = false;
-                    this.DiscoveredHosts.AddRange(x);
-                });
+
+            // init command for triggering connect to remotehost
+            this.ConnectCommand = ReactiveCommand.CreateAsyncTask(
+                this.WhenAny(viewmodel => viewmodel.SelectedRemoteHost, x => x != null), param => RemoteContext.Instance.ConnectAsync(this.SelectedRemoteHost.Name));
+
+            this.ConnectCommand.Subscribe(x => Debug.WriteLine("Conected: " + x));
+
         }
 
         /// <summary>
@@ -248,7 +268,7 @@ namespace look.sender.wpf.ViewModels
             this.RemoteHosts = new ReactiveList<RemoteHost>(favs.Select(x => this.CreateRemoteHost(x.Name, x.Ip)));
 
             // start refresh timer for collecting shareable windows
-            var timer = TaskPoolScheduler.Default.SchedulePeriodic(TimeSpan.FromSeconds(1), this.RefreshShareableWindows);
+            var timer = DispatcherScheduler.Current.SchedulePeriodic(TimeSpan.FromSeconds(1), this.RefreshShareableWindows);
 
             return new CompositeDisposable(timer, this.ShareableWindows);
         }

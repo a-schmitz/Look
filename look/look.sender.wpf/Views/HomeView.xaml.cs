@@ -11,10 +11,12 @@ namespace look.sender.wpf.Views
 {
     #region
 
+    using System;
     using System.Windows;
     using System.Windows.Controls;
 
     using look.sender.wpf.Interfaces;
+    using look.sender.wpf.Models;
     using look.sender.wpf.ViewModels;
 
     using MahApps.Metro.Controls;
@@ -37,9 +39,7 @@ namespace look.sender.wpf.Views
             "ViewModel", typeof(IHomeViewModel), typeof(HomeView), new PropertyMetadata(null));
 
         #endregion
-
         
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -97,6 +97,10 @@ namespace look.sender.wpf.Views
         }
 
         #endregion
+
+        protected void FavoriteItem_OnConnectClicked(object sender, EventArgs e) {
+            this.ViewModel.ConnectCommand.Execute(sender);
+        }
     }
 
 }

@@ -16,12 +16,14 @@ namespace look.sender.wpf.Models
 
     using DynamicData.Binding;
 
+    using ReactiveUI;
+
     #endregion
 
     /// <summary>
     ///     The shared window.
     /// </summary>
-    public class RemoteHostShareableWindow : AbstractNotifyPropertyChanged
+    public class RemoteHostShareableWindow : ReactiveObject
     {
         #region Fields
 
@@ -65,7 +67,7 @@ namespace look.sender.wpf.Models
         /// <summary>
         ///     Gets or sets a value indicating whether is shared.
         /// </summary>
-        public bool IsShared { get { return this.isShared; } set { this.SetAndRaise(ref this.isShared, value); } }
+        public bool IsShared { get { return this.isShared; } set { this.RaiseAndSetIfChanged(ref this.isShared, value); } }
 
         /// <summary>
         ///     Gets or sets the process name.

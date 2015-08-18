@@ -11,9 +11,14 @@ namespace look.sender.wpf.Views
 {
     #region
 
+    using System.Reactive.Linq;
+    using System.Windows.Input;
+
     using look.sender.wpf.ViewModels;
 
     using MahApps.Metro.Controls;
+
+    using ReactiveUI;
 
     #endregion
 
@@ -32,6 +37,8 @@ namespace look.sender.wpf.Views
 
             this.MainWindowViewModel = new MainWindowViewModel();
             this.DataContext = this.MainWindowViewModel;
+
+
         }
 
         #endregion
@@ -44,6 +51,15 @@ namespace look.sender.wpf.Views
         public MainWindowViewModel MainWindowViewModel { get; protected set; }
 
         #endregion
+
+        private void Lst_OnMouseDoubleClick(object sender, MouseButtonEventArgs e) {
+
+            if (lst.SelectedItem == null)
+                return;
+
+            this.MainWindowViewModel.AddHostCommand.Execute(lst.SelectedItem);
+            
+        }
     }
 
 }

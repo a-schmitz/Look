@@ -11,6 +11,9 @@ namespace look.sender.wpf.Interfaces
 {
     #region
 
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     using look.common.Model;
 
     using ReactiveUI;
@@ -25,16 +28,15 @@ namespace look.sender.wpf.Interfaces
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the discovered hosts.
+        ///     The do client discovery async.
         /// </summary>
-        IReactiveList<RemoteHost> DiscoveredHosts { get; set; }
+        /// <returns>
+        ///     The <see cref="Task" />.
+        /// </returns>
+        ReactiveCommand<IEnumerable<RemoteHost>> DiscoveryCommand { get; }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is loading.
-        /// </summary>
-        bool IsDiscoveryLoading { get; set; }
+        ReactiveCommand<object> AddHostCommand { get; }
 
         #endregion
     }
-
 }

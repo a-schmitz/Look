@@ -24,6 +24,15 @@ namespace look.sender.wpf.controls
     /// </summary>
     public partial class FavoriteItem : UserControl
     {
+
+        public event ConnectClickedHandler ConnectClicked;
+        public delegate void ConnectClickedHandler(object sender, EventArgs e);
+
+        public void OnConnectClick() {
+            if (ConnectClicked != null)
+                this.ConnectClicked(this, new EventArgs());
+        }
+
         #region Static Fields
 
         public static readonly DependencyProperty IsConnectorVisibleProperty = DependencyProperty.Register("IsConnectorVisible", typeof(bool), typeof(FavoriteItem), new PropertyMetadata(default(bool)));
@@ -109,13 +118,16 @@ namespace look.sender.wpf.controls
         /// The e.
         /// </param>
         private void borderConnect_MouseUp(object sender, MouseButtonEventArgs e) {
-            if (!this.Connected) {
-                VisualStateManager.GoToElementState(this.LayoutRoot, "StateConnecting", false);
-                this.dispatcherTimer.Start();
-            } else {
-                VisualStateManager.GoToElementState(this.LayoutRoot, "StateDisconnected", false);
-                this.Connected = false;
-            }
+            //if (!this.Connected) {
+            //    VisualStateManager.GoToElementState(this.LayoutRoot, "StateConnecting", false);
+            //    this.dispatcherTimer.Start();
+            //} else {
+            //    VisualStateManager.GoToElementState(this.LayoutRoot, "StateDisconnected", false);
+            //    this.Connected = false;
+            //}
+
+            this.OnConnectClick();
+
         }
 
         /// <summary>

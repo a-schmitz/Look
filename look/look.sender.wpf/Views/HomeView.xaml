@@ -34,7 +34,7 @@
             <!--Header-->
             <Border Grid.Column="0" BorderBrush="White" BorderThickness="0,0,0,1">
                 <StackPanel Orientation="Horizontal">
-                    <Button Width="24" Height="24" Margin="5,0,0,0" Command="{Binding DiscoveryCommand}"
+                    <Button Width="24" Height="24" Margin="5,0,0,0" Command="{Binding MainViewModel.DiscoveryCommand}"
                             VerticalAlignment="Center" Background="{StaticResource GradientDark}" Click="Button_Click">
                         <Rectangle Width="12" Height="12">
                             <Rectangle.Fill>
@@ -78,7 +78,7 @@
                       BorderThickness="0,0,0,0" ItemsSource="{Binding RemoteHosts}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <controls:FavoriteItem Title="{Binding Name}" Margin="5,0" SubTitle="{Binding IpAddress}" IsConnectorVisible="True" />
+                        <controls:FavoriteItem Title="{Binding Name}" Margin="5,0" SubTitle="{Binding IpAddress}" IsConnectorVisible="True" ConnectClicked="FavoriteItem_OnConnectClicked" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
                 <ListView.ContextMenu>

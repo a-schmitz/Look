@@ -42,8 +42,7 @@
 
                     <Label Grid.Row="0" FontSize="16" HorizontalAlignment="Center" Content="No host found!" Visibility="{Binding Path=IsDiscoveryListEmpty, Converter={StaticResource BoolToVisibility}}"></Label>
 
-                    <ListView Grid.Row="1" BorderThickness="0,0,0,0" ItemsSource="{Binding DiscoveredHosts}" Visibility="{Binding Path=IsDiscoveryListEmpty, 
-                        ConverterParameter={x:Static helper:BooleanConvertHint.Inverse}, Converter={StaticResource BoolToVisibility}}">
+                    <ListView x:Name="lst" Grid.Row="1" BorderThickness="0,0,0,0" ItemsSource="{Binding DiscoveredHosts}" SelectedItem="{Binding DiscoveredHost}" MouseDoubleClick="Lst_OnMouseDoubleClick">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <controls1:FavoriteItem Title="{Binding Name}" Margin="5,0" SubTitle="{Binding Ip}"
